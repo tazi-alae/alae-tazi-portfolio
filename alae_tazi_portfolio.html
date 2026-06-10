@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alae Tazi — Football Operations & Event Management</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #a67c52;
+            --primary-dark: #8b6442;
+            --light-bg: #f9f7f3;
+            --light-surface: #ffffff;
+            --light-surface-secondary: #f5f1e8;
+            --text-primary: #1a1a1a;
+            --text-secondary: #5a5a5a;
+            --border-color: rgba(166, 124, 82, 0.15);
+            --border-color-hover: rgba(166, 124, 82, 0.35);
+            --accent-glow: rgba(166, 124, 82, 0.08);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--light-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--text-primary);
+        }
+
+        h1 {
+            font-size: 4rem;
+            line-height: 1.1;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary);
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .accent-mono {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.9rem;
+            letter-spacing: 0.05em;
+            color: var(--primary);
+        }
+
+        /* HERO WITH PHOTO */
+        .hero {
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 2rem;
+            background: var(--light-bg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-container {
+            max-width: 1400px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-photo {
+            aspect-ratio: 4/5;
+            background: var(--light-surface);
+            border: 3px solid var(--primary);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(29, 209, 161, 0.1);
+        }
+
+        .hero-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light-surface-secondary);
+            color: var(--text-secondary);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.9rem;
+        }
+
+        .hero-content {
+            animation: fadeInUp 1s ease-out;
+        }
+
+        .hero-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .hero-desc {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 500px;
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: var(--primary);
+            color: #ffffff;
+            text-decoration: none;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border-radius: 4px;
+            border: 2px solid var(--primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.05em;
+        }
+
+        .cta-button:hover {
+            background: transparent;
+            color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        /* TIMELINE */
+        .timeline-section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 6rem 2rem;
+        }
+
+        .timeline-container {
+            position: relative;
+            padding: 2rem 0;
+        }
+
+        .timeline-line {
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--border-color);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            margin-bottom: 6rem;
+            position: relative;
+        }
+
+        .timeline-item:nth-child(odd) .timeline-content {
+            margin-left: 0;
+            margin-right: auto;
+            width: 48%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .timeline-item:nth-child(even) .timeline-content {
+            margin-left: auto;
+            margin-right: 0;
+            width: 48%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .timeline-item:nth-child(even) .timeline-image {
+            order: 2;
+        }
+
+        .timeline-item:nth-child(even) .timeline-info {
+            order: 1;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            top: 60px;
+            width: 16px;
+            height: 16px;
+            background: var(--primary);
+            border: 3px solid var(--light-bg);
+            border-radius: 50%;
+            transform: translateX(-50%);
+            z-index: 2;
+        }
+
+        /* NEW ALTERNATING SIDE-BY-SIDE LAYOUT */
+        .timeline-content-alt {
+            display: grid;
+            grid-template-columns: 1fr 1.2fr;
+            gap: 3rem;
+            align-items: center;
+            margin-left: 60px;
+        }
+
+        .timeline-item-reverse .timeline-content-alt {
+            grid-template-columns: 1.2fr 1fr;
+        }
+
+        .timeline-gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .gallery-item-small {
+            aspect-ratio: 1/1;
+            background: var(--light-surface);
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .gallery-item-small:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px var(--accent-glow);
+        }
+
+        .gallery-item-small img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-placeholder-small {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light-surface-secondary);
+            color: var(--text-secondary);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.75rem;
+            text-align: center;
+            padding: 0.5rem;
+        }
+
+        .timeline-info-alt {
+            background: var(--light-surface);
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-info-alt:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px var(--accent-glow);
+        }
+
+        .event-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .event-link:hover {
+            transform: translateX(4px);
+        }
+
+        /* OLD STYLES (KEEPING FOR REFERENCE) */
+        .timeline-image {
+            aspect-ratio: 4/3;
+            background: var(--light-surface);
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-image:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px var(--accent-glow);
+        }
+
+        .timeline-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light-surface-secondary);
+            color: var(--text-secondary);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.85rem;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .timeline-info {
+            background: var(--light-surface);
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-info:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px var(--accent-glow);
+        }
+
+        .timeline-year {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.9rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.05em;
+        }
+
+        .timeline-title {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            font-family: 'Barlow Condensed', sans-serif;
+        }
+
+        .timeline-role {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .timeline-fact {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-bottom: 0.8rem;
+            margin-bottom: 0.8rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.95rem;
+        }
+
+        .timeline-fact:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .fact-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .fact-value {
+            color: var(--primary);
+            font-family: 'DM Mono', monospace;
+            font-weight: 600;
+        }
+
+        /* MEDIA SECTION */
+        .media-section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 6rem 2rem;
+            background: var(--light-surface);
+        }
+
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .media-card {
+            background: var(--light-surface);
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .media-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px var(--accent-glow);
+        }
+
+        .media-image {
+            aspect-ratio: 16/9;
+            background: var(--light-surface-secondary);
+            overflow: hidden;
+        }
+
+        .media-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .media-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--light-surface-secondary);
+            color: var(--text-secondary);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.8rem;
+        }
+
+        .media-content {
+            padding: 1.5rem;
+        }
+
+        .media-type {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .media-title {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            font-family: 'Barlow Condensed', sans-serif;
+            color: var(--text-primary);
+        }
+
+        .media-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .media-link {
+            display: inline-block;
+            color: var(--primary);
+            text-decoration: none;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .media-link:hover {
+            transform: translateX(4px);
+        }
+
+        /* SKILLS */
+        .skills-section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 6rem 2rem;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .skill-category {
+            padding: 1.5rem;
+            background: var(--light-surface);
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .skill-category:hover {
+            border-color: var(--primary);
+            background: var(--light-surface-secondary);
+        }
+
+        .skill-category h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+        }
+
+        .skill-item {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 0.5rem;
+            padding-left: 0.8rem;
+            border-left: 2px solid var(--primary);
+        }
+
+        /* TESTIMONIALS */
+        .testimonials-section {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 6rem 2rem;
+            background: var(--light-surface);
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .testimonial-card {
+            padding: 2rem;
+            background: var(--light-surface);
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .testimonial-card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 10px 30px var(--accent-glow);
+        }
+
+        .testimonial-text {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+            font-style: italic;
+        }
+
+        .testimonial-author {
+            border-top: 2px solid var(--border-color);
+            padding-top: 1rem;
+        }
+
+        .author-name {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            margin-bottom: 0.3rem;
+        }
+
+        .author-title {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--primary);
+            letter-spacing: 0.05em;
+        }
+
+        /* LANGUAGES */
+        .languages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .language-card {
+            padding: 1.5rem;
+            background: var(--light-surface);
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .language-card:hover {
+            border-color: var(--primary);
+            transform: scale(1.05);
+        }
+
+        .language-name {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .language-level {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--primary);
+            letter-spacing: 0.05em;
+        }
+
+        /* FOOTER */
+        footer {
+            background: var(--light-surface);
+            padding: 3rem 2rem;
+            text-align: center;
+            border-top: 2px solid var(--border-color);
+        }
+
+        .contact-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .contact-links a {
+            color: var(--primary);
+            text-decoration: none;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .contact-links a:hover {
+            transform: translateY(-2px);
+        }
+
+        /* ANIMATIONS */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .hero-title {
+                font-size: 3rem;
+            }
+
+            .timeline-content-alt,
+            .timeline-item-reverse .timeline-content-alt {
+                grid-template-columns: 1fr;
+                margin-left: 60px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            h2 {
+                font-size: 2rem;
+            }
+
+            .timeline-line {
+                left: 20px;
+            }
+
+            .timeline-content-alt,
+            .timeline-item-reverse .timeline-content-alt {
+                grid-template-columns: 1fr;
+                margin-left: 60px;
+            }
+
+            .timeline-dot {
+                left: 20px;
+            }
+
+            .gallery-item-small {
+                aspect-ratio: 4/3;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HERO WITH PHOTO -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-photo">
+                <div class="photo-placeholder"><img src="Images/Hero.jpeg" alt="Alae Tazi"></div>
+            </div>
+            <div class="hero-content">
+                <h1 class="hero-title">Alae Tazi</h1>
+                <p class="hero-desc">
+                    Football operations professional with experience in elite international competitions, youth tournaments, and academy programmes. Experienced in tournament delivery, competition management, stakeholder coordination, logistics, and matchday operations through projects including AFCON 2025, Tangier International Cup 2026, Barça Academy, and Surf Cup International. Fluent in Arabic, English, and French, with working proficiency in Spanish and experience operating in multicultural football environments.
+                </p>
+                <a href="#timeline" class="cta-button">View My Journey</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- TIMELINE WITH ALTERNATING SIDE-BY-SIDE LAYOUT -->
+    <section class="timeline-section" id="timeline">
+        <h2 style="text-align: center; margin-bottom: 4rem;">My Journey</h2>
+        
+        <div class="timeline-container">
+            <div class="timeline-line"></div>
+
+            <!-- AGON 2021-2024 -->
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content-alt">
+                    <div class="timeline-info-alt">
+                        <div class="timeline-year">2021 — 2024</div>
+                        <h3 class="timeline-title">AGON</h3>
+                        <p class="timeline-role"><span class="accent-mono">Founder & Event Director</span></p>
+                        <div class="timeline-fact">
+                            <span class="fact-label">Participants</span>
+                            <span class="fact-value">500+ Debaters</span>
+                        </div>
+                        <div class="timeline-fact">
+                            <span class="fact-label">Editions</span>
+                            <span class="fact-value">3 Successful Events</span>
+                        </div>
+                        <div class="timeline-fact">
+                            <span class="fact-label">Status</span>
+                            <span class="fact-value">Top Debate Competition in Moroccan Universities</span>
+                        </div>
+                        <div class="timeline-fact">
+                            <span class="fact-label">Impact</span>
+                            <span class="fact-value">National Recognition</span>
+                        </div>
+                        <a href="https://www.instagram.com/the.great.debaters.encgt/" class="event-link" target="_blank">Learn More →</a>
+                    </div>
+                    <div class="timeline-gallery">
+                        <div class="gallery-item"><img src="Images/AGON 2.jpeg" alt="AGON_Presenting"></div>
+                        <div class="gallery-item"><img src="Images/AGON 1.jpeg" alt="AGON_Venue"></div>
+                        <div class="gallery-item"><img src="Images/AGON 6.jpeg" alt="AGON_Poster"></div>
+                        <div class="gallery-item"><img src="Images/AGON 4.jpeg" alt="AGON_Poster"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SURF CUP 2024 -->
+            <div class="timeline-item timeline-item-reverse">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content-alt">
+                    <div class="timeline-gallery">
+                        <div class="gallery-item"><img src="Images/Surf Cup 2024 3.jpeg" alt="Pitch Coordination"></div>
+                        <div class="gallery-item"><img src="Images/Surf Cup 2024 1.jpeg" alt="Venue"></div>
+                        <div class="gallery-item"><img src="Images/Surf Cup 2024 8.jpeg" alt="Trophy"></div>
+                        <div class="gallery-item"><img src="Images/Surf Cup 2024 9.jpeg" alt="Participating Clubs"></div>
+                    </div>
+                    <div class="timeline-info-alt">
+                        <div class="timeline-year">November 2024</div>
+                        <h3 class="timeline-title">Surf Cup International</h3>
+                        <p class="timeline-role"><span class="accent-mono">Field Coordinator</span></p>
+                        <div class="timeline-fact">
+                            <span class="fact-label">Teams</span>
+                            <span class="fact-value">180+</span>
+                        </div>
+                        <div class="timeline-fact">
+                            <span class="fact-label">Location</span>
+                            <span class="fact-value">Salou, Spain</span>
+                        </div>
+                        <div class="timeline-fact">
+                            <span class="fact-label">Format</span>
+                            <span class="fact-value">Multi-Pitch</span>
+                        </div>
+                        <div class="timeline-fact">
+                            <span class="fact-label">Scope</span>
+                            <span class="fact-value">Concurrent Matches</span>
+                        </div>
+                        <a href="https://globalsportsexperiences.com/surf-cup-international-salou-2024-recap/" class="event-link" target="_blank">Learn More →</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- BARÇA 2025 -->
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content-alt">
+                    <div class="timeline-info-alt">
+                        <div class="timeline-year">April — August 2025</div>
+                        <h3 class="timeline-title">Barça Academy – FC Barcelona</h3>
+                        <p class="timeline-role"><span class="accent-mono">Business Development Assistant</span></p>
+                        
+                        <div style="margin-top: 2rem; border-top: 2px solid var(--border-color); padding-top: 1.5rem;">
+                            <h4 style="font-size: 1rem; margin-bottom: 1rem; color: var(--text-primary); font-family: 'Barlow Condensed', sans-serif;">Projects</h4>
+                            
+                            <div style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color);">
+                                <div style="color: var(--primary); font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">01. MARKET EXPANSION STRATEGY</div>
+                                <div style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;">Conducted market research for brand expansion and new Barça Academy openings entry strategy into Morocco, Saudi Arabia and Francophone African countries.</div>
+                            </div>
+
+                            <div style="margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color);">
+                                <div style="color: var(--primary); font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">02. BA SUMMER CAMPS 2025</div>
+                                <div style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;">Coordinated logistics for coaches assigned to all summer camps across the Americas, Europe, Africa and Asia. Managed database of 400+ coaches, 115 camps, 4500+ players worldwide.</div>
+                            </div>
+
+                            <div>
+                                <div style="color: var(--primary); font-family: 'DM Mono', monospace; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.5rem;">03. FIRST TEAM SUMMER TOUR</div>
+                                <div style="font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6;">Administrative support for the first team's tour in Japan and South Korea where they played three international matches.</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 1.5rem;">
+                            <div class="timeline-fact">
+                                <span class="fact-label">Global Reach</span>
+                                <span class="fact-value">4 Continents</span>
+                            </div>
+                            <div class="timeline-fact">
+                                <span class="fact-label">Scale</span>
+                                <span class="fact-value">4500+ Players</span>
+                            </div>
+                        </div>
+                        
+                        <a href="https://barcaacademy.fcbarcelona.com/en/" class="event-link">Learn More →</a>
+                    </div>
+                    <div class="timeline-gallery">
+                        <div class="gallery-item"><img src="Images/BA 7.jpeg" alt="At the office"></div>
+                        <div class="gallery-item"><img src="Images/BA 2.jpeg" alt="Barça Academy Summer Camp Cuitat Esportiva"></div>
+                        <div class="gallery-item"><img src="Images/BA 12.jpeg" alt="Barça Academy World Cup 2025"></div>
+                        <div class="gallery-item"><img src="Images/FCB Tour 2025.jpg" alt="FCB Tour 2025"></div>
+                        <div class="gallery-item"><img src="Images/BA 3.jpeg" alt="At the office"></div>
+                        <div class="gallery-item"><img src="Images/BA 9.jpeg" alt="Barça Academy World Cup 2025 Closing Ceremony"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AFCON 2025 -->
+            <div class="timeline-item timeline-item-reverse">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content-alt">
+                    <div class="timeline-gallery">
+                        <div class="gallery-item"><img src="Images/AFCON 7.jpeg" alt="AFCON Pitch"></div>
+                        <div class="gallery-item"><img src="Images/AFCON 8.jpeg" alt="AFCON Lockerroom"></div>
+                        <div class="gallery-item"><img src="Images/AFCON 5.jpeg" alt="AFCON Attendance"></div>
+                        <div class="gallery-item"><img src="Images/AFCON 6.jpeg" alt="AFCON Matchballs"></div>
+                    </div>
+                    <div class="timeline-info-alt">
+                        <div class="timeline-year">December 2025 — January 2026</div>
+                        <h3 class="timeline-title">AFCON 2025</h3>
+                        <p class="timeline-role"><span class="accent-mono">Competitions Team Member</span></p>
+                        <div class="timeline-fact">
+                            <span class="fact-label">Tournament</span>
+                            <span class="fact-value">CAF & FRMF</span>
+                        </div>
+                        <div class="timeline-fact">
+                            <span class="fact-label">Coverage</span>
+                            <span class="fact-value">Group Stages + Semis</span>
+                        </div>
+                        <div class="timeline-fact">
+                            <span class="fact-label">Venue</span>
+                            <span class="fact-value">Grand Stadium Tangier</span>
+                        </div>
+                        <div class="timeline-fact">
+                            <span class="fact-label">Protocol Level</span>
+                            <span class="fact-value">Continental Standards</span>
+                        </div>
+                        <a href="https://www.cafonline.com/afcon2025/" class="event-link">Learn More →</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TIC 2026 -->
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                <div class="timeline-content-alt">
+                    <div class="timeline-info-alt">
+                        <div class="timeline-year">April — May 2026</div>
+                        <h3 class="timeline-title">Tangier International Cup 2026</h3>
+                        <p class="timeline-role"><span class="accent-mono">Project Manager</span></p>
+                        <div class="timeline-fact">
+                            <span class="fact-label">Players</span>
+                            <span class="fact-value">350+ Athletes</span>
+                        </div>
+                        <div class="timeline-fact">
+                            <span class="fact-label">Nations</span>
+                            <span class="fact-value">Morocco, Spain, Portugal, France, England, Belgium</span>
+                        </div>
+                        <div class="timeline-fact">
+                            <span class="fact-label">Categories</span>
+                            <span class="fact-value">U13, U11, Women's</span>
+                        </div>
+                        <div class="timeline-fact">
+                            <span class="fact-label">Edition</span>
+                            <span class="fact-value">6th Year Running</span>
+                        </div>
+                        <a href="https://tangierinternationalcup.com/" class="event-link" target="_blank">Learn More →</a>
+                    </div>
+                    <div class="timeline-gallery">
+                        <div class="gallery-item"><img src="Images/TIC 2026 3.jpeg" alt="Field Operations"></div>
+                        <div class="gallery-item"><img src="Images/TIC 2026 4.jpeg" alt="Leicester City Airport Reception"></div>
+                        <div class="gallery-item"><img src="Images/TIC 2026 5.jpeg" alt="Sevilla FC"></div>
+                        <div class="gallery-item"><img src="Images/TIC 2026 6.jpeg" alt="RWDM Women"></div>
+                        <div class="gallery-item"><img src="Images/TIC 2026 2.jpeg" alt="Sporting CP Trophy"></div>
+                        <div class="gallery-item"><img src="Images/TIC 2026 1.jpeg" alt="TIC Stadium"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="testimonials-section">
+        <div style="max-width: 1400px; margin: 0 auto;">
+            <h2>Recommendations</h2>
+            <p style="color: var(--text-secondary); font-size: 1rem; margin-top: 1rem; margin-bottom: 2rem;">
+                What partners and colleagues say.
+            </p>
+            
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-text">
+                        "Alae's execution at TIC 2026 was flawless. Managing 350+ players and elite clubs while maintaining operational excellence under pressure — that's rare. Every detail mattered."
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-name">Name Here</div>
+                        <div class="author-title">Title · Organization</div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-text">
+                        "His coordination of 400+ coaches and international logistics at Barça was professional and meticulous. Alae brings technical expertise and genuine care for participants."
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-name">Name Here</div>
+                        <div class="author-title">Title · Organization</div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-text">
+                        "During AFCON 2025, Alae collaborated seamlessly with CAF officials. His understanding of continental tournament protocols and real-time problem-solving were exemplary."
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-name">Name Here</div>
+                        <div class="author-title">Title · Organization</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section class="skills-section">
+        <h2>Skills & Expertise</h2>
+        
+        <h3 style="font-size: 1.3rem; margin-top: 3rem; margin-bottom: 1.5rem; color: var(--text-primary); font-family: 'Barlow Condensed', sans-serif;">Core Competencies</h3>
+        <div class="skills-grid">
+            <div class="skill-category">
+                <h4>Tournament Operations</h4>
+                <div class="skill-item">End-to-end event management</div>
+                <div class="skill-item">Fixture scheduling</div>
+                <div class="skill-item">Matchday protocol</div>
+            </div>
+            <div class="skill-category">
+                <h4>Logistics & Coordination</h4>
+                <div class="skill-item">Transport planning</div>
+                <div class="skill-item">Hotel operations</div>
+                <div class="skill-item">Inter-venue coordination</div>
+            </div>
+            <div class="skill-category">
+                <h4>Data & Administration</h4>
+                <div class="skill-item">Database management</div>
+                <div class="skill-item">Performance reporting</div>
+                <div class="skill-item">CRM systems</div>
+            </div>
+            <div class="skill-category">
+                <h4>Stakeholder Management</h4>
+                <div class="skill-item">Federation liaison</div>
+                <div class="skill-item">Club coordination</div>
+                <div class="skill-item">Multicultural teams</div>
+            </div>
+        </div>
+
+        <h3 style="font-size: 1.3rem; margin-top: 3rem; margin-bottom: 1.5rem; color: var(--text-primary); font-family: 'Barlow Condensed', sans-serif;">Software & Tools</h3>
+        <div class="skills-grid">
+            <div class="skill-category">
+                <h4>Data & Reporting</h4>
+                <div class="skill-item">Power BI</div>
+                <div class="skill-item">Excel (Advanced)</div>
+                <div class="skill-item">Google Sheets</div>
+            </div>
+            <div class="skill-category">
+                <h4>Project Management</h4>
+                <div class="skill-item">Notion</div>
+                <div class="skill-item">SAP</div>
+                <div class="skill-item">HubSpot</div>
+            </div>
+            <div class="skill-category">
+                <h4>Media Production</h4>
+                <div class="skill-item">Adobe Suite</div>
+                <div class="skill-item">Final Cut Pro</div>
+                <div class="skill-item">Canva Pro</div>
+            </div>
+            <div class="skill-category">
+                <h4>Video Analysis</h4>
+                <div class="skill-item">Hudl</div>
+                <div class="skill-item">Nacsport</div>
+                <div class="skill-item">Metrica Nexus</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LANGUAGES -->
+    <section style="max-width: 1400px; margin: 0 auto; padding: 6rem 2rem; background: var(--light-surface);">
+        <h2>Languages</h2>
+        <div class="languages-grid">
+            <div class="language-card">
+                <div class="language-name">Arabic</div>
+                <div class="language-level">Native</div>
+            </div>
+            <div class="language-card">
+                <div class="language-name">English</div>
+                <div class="language-level">C2 — Fluent</div>
+            </div>
+            <div class="language-card">
+                <div class="language-name">French</div>
+                <div class="language-level">C1 — Fluent</div>
+            </div>
+            <div class="language-card">
+                <div class="language-name">Spanish</div>
+                <div class="language-level">B1</div>
+            </div>
+            <div class="language-card">
+                <div class="language-name">German</div>
+                <div class="language-level">B1</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+        <h3>Let's Work Together</h3>
+        <p style="color: var(--text-secondary); margin-top: 1rem; font-size: 1rem;">
+            Open to competition operations roles and international event management.
+        </p>
+        <div class="contact-links">
+            <a href="mailto:tazi.alae.01@gmail.com">Email</a>
+            <a href="https://linkedin.com/in/alae-tazi">LinkedIn</a>
+            <a href="tel:+212656560965">+212 656 56 09 65</a>
+            <a href="#">Tangier, Morocco</a>
+        </div>
+        <p style="color: var(--text-secondary); margin-top: 2rem; font-size: 0.9rem;">
+            © 2026 Alae Tazi. All rights reserved.
+        </p>
+    </footer>
+
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
