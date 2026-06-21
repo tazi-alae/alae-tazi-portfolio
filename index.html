@@ -1,782 +1,725 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alae Tazi — Football Operations & Event Management</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Alae Tazi — Football Competition Operations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#a67c52;
+    --primary-dark:#8b6442;
+    --bg:#f9f7f3;
+    --surface:#ffffff;
+    --surface-2:#f3efe6;
+    --text:#1a1a1a;
+    --text-soft:#5a5a5a;
+    --line: rgba(166,124,82,0.18);
+    --line-strong: rgba(166,124,82,0.4);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    overflow:hidden;
+  }
+  body.unlocked{ overflow:auto; }
+  h1,h2,h3{ font-family:'Barlow Condensed',sans-serif; font-weight:700; letter-spacing:-0.02em; }
+  .mono{ font-family:'DM Mono',monospace; }
 
-        :root {
-            --primary: #a67c52;
-            --light-bg: #f9f7f3;
-            --light-surface: #ffffff;
-            --text-primary: #1a1a1a;
-            --text-secondary: #5a5a5a;
-            --border-color: rgba(166, 124, 82, 0.15);
-        }
+  /* ===== SLIDE STRUCTURE ===== */
+  #deck{ position:relative; width:100%; height:100vh; }
+  body.unlocked #deck{ height:auto; }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: var(--light-bg);
-            color: var(--text-primary);
-            line-height: 1.6;
-        }
+  .slide{
+    position:absolute; inset:0;
+    width:100%; height:100vh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:6vh 6vw;
+    opacity:0; pointer-events:none;
+    transition:opacity .5s ease;
+  }
+  .slide.active{ opacity:1; pointer-events:auto; }
+  body.unlocked .slide{
+    position:relative; opacity:1; pointer-events:auto;
+    min-height:100vh; height:auto; padding:10vh 6vw;
+    border-bottom:1px solid var(--line);
+  }
 
-        h1, h2, h3 {
-            font-family: 'Barlow Condensed', sans-serif;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-        }
+  /* ===== PROGRESS TRAIL (pitch-line) ===== */
+  #trail{
+    position:fixed; right:22px; top:50%; transform:translateY(-50%);
+    display:flex; flex-direction:column; align-items:center; gap:10px;
+    z-index:50;
+  }
+  body.unlocked #trail{ display:none; }
+  #trail .seg{
+    width:2px; height:14px; background:var(--line-strong);
+  }
+  #trail .dot{
+    width:8px; height:8px; border-radius:50%;
+    background:var(--surface); border:2px solid var(--line-strong);
+    transition:all .3s ease;
+  }
+  #trail .dot.done{ background:var(--primary); border-color:var(--primary); }
+  #trail .dot.current{ background:var(--primary); border-color:var(--primary); transform:scale(1.5); box-shadow:0 0 0 4px rgba(166,124,82,0.15); }
 
-        /* HERO */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            text-align: center;
-        }
+  /* ===== NAV BUTTONS ===== */
+  #nav{
+    position:fixed; right:28px; bottom:28px; z-index:50;
+    display:flex; gap:10px;
+  }
+  body.unlocked #nav{ position:fixed; }
+  .nav-btn{
+    width:50px; height:50px; border-radius:50%;
+    border:2px solid var(--primary); background:var(--surface);
+    color:var(--primary); font-size:1.2rem; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:all .25s ease;
+    box-shadow:0 4px 14px rgba(0,0,0,0.08);
+  }
+  .nav-btn:hover{ background:var(--primary); color:#fff; transform:translateY(-2px); }
+  .nav-btn:disabled{ opacity:0.25; cursor:default; pointer-events:none; }
 
-        .hero-photo {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            border: 3px solid var(--primary);
-            overflow: hidden;
-            margin-bottom: 2rem;
-            object-fit: cover;
-        }
+  .skip-hint{
+    position:fixed; left:28px; bottom:28px; z-index:50;
+    font-family:'DM Mono',monospace; font-size:.7rem; color:var(--text-soft);
+    letter-spacing:.05em; text-transform:uppercase; opacity:.6;
+  }
+  body.unlocked .skip-hint{ display:none; }
 
-        .hero h1 {
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-        }
+  /* ===== HERO ===== */
+  .hero-photo{
+    width:140px; height:140px; border-radius:50%;
+    border:3px solid var(--primary); overflow:hidden; margin-bottom:1.8rem;
+  }
+  .hero-photo img{ width:100%; height:100%; object-fit:cover; }
+  .slide h1.hero-name{ font-size:3rem; margin-bottom:.4rem; }
+  .eyebrow{
+    font-family:'DM Mono',monospace; font-size:.8rem; color:var(--primary);
+    text-transform:uppercase; letter-spacing:.15em; margin-bottom:.6rem;
+  }
+  .hero-desc{ color:var(--text-soft); max-width:480px; text-align:center; margin:1rem 0 2rem; line-height:1.7; }
+  .cta{
+    display:inline-flex; align-items:center; gap:.5rem;
+    padding:.85rem 2rem; background:var(--primary); color:#fff;
+    border:2px solid var(--primary); border-radius:4px; text-decoration:none;
+    font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1rem;
+    letter-spacing:.03em; cursor:pointer; transition:all .25s ease;
+  }
+  .cta:hover{ background:transparent; color:var(--primary); }
+  .cta.ghost{ background:transparent; color:var(--primary); }
+  .cta.ghost:hover{ background:var(--primary); color:#fff; }
 
-        .hero-subtitle {
-            color: var(--text-secondary);
-            font-size: 1rem;
-            margin-bottom: 1.5rem;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-        }
+  /* ===== EXPERIENCE SLIDES ===== */
+  .exp-slide{ position:relative; overflow:hidden; padding:0; }
+  .exp-frame{
+    width:100%; height:100%; position:relative;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .exp-img-stack{
+    position:absolute; inset:0;
+  }
+  .exp-img-stack img{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+    opacity:0; transition:opacity .9s ease;
+  }
+  .exp-img-stack img.show{ opacity:1; }
+  .exp-img-stack::after{
+    content:''; position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.55) 100%);
+  }
+  .exp-counter{
+    position:absolute; top:24px; right:24px; z-index:5;
+    font-family:'DM Mono',monospace; font-size:.8rem; color:#fff;
+    background:rgba(0,0,0,0.4); padding:.4rem .8rem; border-radius:4px;
+    letter-spacing:.05em;
+  }
+  .exp-caption{
+    position:absolute; bottom:0; left:0; right:0; z-index:5;
+    padding:3rem 6vw 4rem; color:#fff;
+  }
+  .exp-caption .eyebrow{ color:#e8d4ba; }
+  .exp-caption h2{ font-size:2.4rem; margin-bottom:.3rem; }
+  .exp-caption .role{ font-size:1.05rem; opacity:.9; font-family:'DM Mono',monospace; }
 
-        .hero-desc {
-            font-size: 1rem;
-            color: var(--text-secondary);
-            max-width: 500px;
-            margin-bottom: 2rem;
-            line-height: 1.7;
-        }
+  /* facts panel (appears after images cycle) */
+  .exp-facts{
+    position:absolute; inset:0; z-index:8;
+    background:linear-gradient(135deg, var(--bg) 0%, var(--surface-2) 100%);
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    padding:6vh 6vw; opacity:0; pointer-events:none; transition:opacity .6s ease;
+  }
+  .exp-facts.show{ opacity:1; pointer-events:auto; }
+  .exp-facts h2{ font-size:2.6rem; margin-bottom:.2rem; text-align:center; }
+  .exp-facts .role{ font-family:'DM Mono',monospace; color:var(--text-soft); margin-bottom:2rem; }
+  .facts-grid{
+    display:grid; grid-template-columns:repeat(2,1fr); gap:1rem;
+    width:100%; max-width:640px; margin-bottom:1.6rem;
+  }
+  .fact-card{
+    background:var(--surface); border:2px solid var(--line); border-radius:6px;
+    padding:1.1rem 1.3rem;
+  }
+  .fact-card .fl{ font-family:'DM Mono',monospace; font-size:.7rem; color:var(--primary); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.3rem; }
+  .fact-card .fv{ font-size:1rem; font-weight:600; }
 
-        .cta-button {
-            display: inline-block;
-            padding: 0.8rem 2rem;
-            background: var(--primary);
-            color: white;
-            text-decoration: none;
-            font-family: 'Barlow Condensed', sans-serif;
-            font-weight: 700;
-            font-size: 1rem;
-            border-radius: 4px;
-            border: 2px solid var(--primary);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+  /* ===== EDUCATION ===== */
+  .edu-card{
+    display:flex; flex-direction:column; align-items:center; text-align:center; max-width:420px;
+  }
+  .edu-photo{
+    width:200px; height:200px; border-radius:8px; overflow:hidden;
+    border:3px solid var(--primary); margin-bottom:1.6rem;
+  }
+  .edu-photo img{ width:100%; height:100%; object-fit:cover; }
+  .edu-list{ width:100%; display:flex; flex-direction:column; gap:1.2rem; margin-top:1rem; }
+  .edu-item{
+    background:var(--surface); border:2px solid var(--line); border-radius:6px;
+    padding:1.2rem 1.5rem; display:flex; align-items:center; gap:1rem; text-align:left;
+  }
+  .edu-logo{
+    width:48px; height:48px; border-radius:50%; flex-shrink:0;
+    background:var(--surface-2); display:flex; align-items:center; justify-content:center;
+    font-family:'Barlow Condensed',sans-serif; font-weight:700; color:var(--primary); font-size:1.1rem;
+    border:2px solid var(--line);
+  }
+  .edu-degree{ font-weight:700; font-size:1rem; }
+  .edu-school{ color:var(--text-soft); font-size:.88rem; }
+  .edu-year{ font-family:'DM Mono',monospace; font-size:.78rem; color:var(--primary); margin-top:.2rem; }
 
-        .cta-button:hover {
-            background: transparent;
-            color: var(--primary);
-        }
+  /* ===== CERTIFICATIONS ===== */
+  .cert-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:1.2rem;
+    max-width:820px; width:100%;
+  }
+  .cert-card{
+    background:var(--surface); border:2px solid var(--line); border-radius:6px;
+    padding:1.4rem 1rem; text-align:center; transition:all .25s ease;
+  }
+  .cert-card:hover{ border-color:var(--primary); transform:translateY(-3px); }
+  .cert-logo{
+    width:52px; height:52px; border-radius:50%; margin:0 auto .9rem;
+    background:var(--surface-2); border:2px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Barlow Condensed',sans-serif; font-weight:700; color:var(--primary); font-size:1.3rem;
+  }
+  .cert-title{ font-weight:700; font-size:.92rem; margin-bottom:.4rem; line-height:1.3; }
+  .cert-issuer{ color:var(--text-soft); font-size:.78rem; margin-bottom:.6rem; }
+  .cert-year{
+    display:inline-block; font-family:'DM Mono',monospace; font-size:.68rem;
+    padding:.3rem .7rem; background:rgba(166,124,82,0.1); color:var(--primary);
+    border-radius:4px; letter-spacing:.05em; text-transform:uppercase;
+  }
 
-        /* EXPERIENCES SECTION */
-        .experiences-section {
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
+  /* ===== SKILLS (one section per slide) ===== */
+  .skill-slide-inner{ max-width:760px; width:100%; text-align:center; }
+  .skill-sub{ display:flex; flex-direction:column; gap:.7rem; max-width:420px; margin:0 auto 2.2rem; text-align:left; }
+  .skill-row{
+    display:flex; align-items:center; gap:.8rem;
+    background:var(--surface); border:1px solid var(--line); border-radius:6px;
+    padding:.8rem 1.1rem; font-size:.95rem;
+  }
+  .skill-row::before{ content:'●'; color:var(--primary); font-size:.6rem; }
+  .skill-pics{ display:grid; grid-template-columns:1fr 1fr; gap:1rem; max-width:480px; margin:0 auto; }
+  .skill-pics .ph{
+    aspect-ratio:4/3; border-radius:6px; overflow:hidden; border:2px solid var(--line);
+  }
+  .skill-pics .ph img{ width:100%; height:100%; object-fit:cover; }
 
-        .section-title {
-            font-size: 2rem;
-            text-align: center;
-            margin-bottom: 3rem;
-            color: var(--primary);
-        }
+  /* ===== LANGUAGES ===== */
+  .lang-grid{
+    display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; max-width:600px; width:100%;
+  }
+  .lang-card{
+    background:var(--surface); border:2px solid var(--line); border-radius:6px;
+    padding:1.4rem 1rem; text-align:center; transition:all .25s ease;
+  }
+  .lang-card:hover{ border-color:var(--primary); transform:scale(1.04); }
+  .lang-name{ font-size:1.1rem; font-weight:700; margin-bottom:.4rem; }
+  .lang-level{ font-family:'DM Mono',monospace; font-size:.78rem; color:var(--primary); }
 
-        .experience-item {
-            margin-bottom: 4rem;
-            background: var(--light-surface);
-            border-radius: 8px;
-            overflow: hidden;
-        }
+  /* ===== SUMMARY ===== */
+  .summary-photo{
+    width:110px; height:110px; border-radius:50%; border:3px solid var(--primary);
+    overflow:hidden; margin-bottom:1.6rem;
+  }
+  .summary-photo img{ width:100%; height:100%; object-fit:cover; }
+  .summary-grid{
+    display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; max-width:680px; width:100%; margin:1.6rem 0 2rem;
+  }
+  .summary-stat{ text-align:center; }
+  .summary-num{ font-family:'Barlow Condensed',sans-serif; font-size:2.4rem; font-weight:700; color:var(--primary); line-height:1; }
+  .summary-label{ font-size:.75rem; color:var(--text-soft); text-transform:uppercase; letter-spacing:.05em; margin-top:.3rem; }
+  .summary-skills{
+    display:flex; flex-wrap:wrap; gap:.5rem; justify-content:center; max-width:600px; margin-bottom:1rem;
+  }
+  .summary-skills span{
+    font-family:'DM Mono',monospace; font-size:.75rem; padding:.4rem .9rem;
+    background:var(--surface-2); border:1px solid var(--line); border-radius:20px; color:var(--text-soft);
+  }
 
-        /* Image slider */
-        .image-slider {
-            position: relative;
-            width: 100%;
-            height: 300px;
-            background: #f5f1e8;
-            overflow: hidden;
-            margin-bottom: 2rem;
-        }
+  /* ===== CONTACT ===== */
+  .contact-links{ display:flex; flex-wrap:wrap; justify-content:center; gap:1.3rem; margin:1.8rem 0; }
+  .contact-links a{
+    color:var(--primary); text-decoration:none; font-family:'DM Mono',monospace; font-size:.9rem;
+    border-bottom:1px solid transparent; transition:border-color .2s ease;
+  }
+  .contact-links a:hover{ border-color:var(--primary); }
 
-        .image-slider img {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0;
-            animation: slideIn 0.8s ease-out forwards;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .image-counter {
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.6);
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            font-family: 'DM Mono', monospace;
-            font-size: 0.85rem;
-            z-index: 10;
-        }
-
-        /* Flashcards */
-        .flashcards-container {
-            padding: 2rem;
-            display: grid;
-            gap: 1rem;
-        }
-
-        .flashcard {
-            background: linear-gradient(135deg, #f9f7f3 0%, #f5f1e8 100%);
-            border: 2px solid var(--border-color);
-            border-radius: 4px;
-            padding: 1.5rem;
-            animation: fadeInUp 0.6s ease-out forwards;
-            opacity: 0;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .flashcard:nth-child(1) { animation-delay: 0.2s; }
-        .flashcard:nth-child(2) { animation-delay: 0.4s; }
-        .flashcard:nth-child(3) { animation-delay: 0.6s; }
-        .flashcard:nth-child(4) { animation-delay: 0.8s; }
-
-        .flashcard-label {
-            font-family: 'DM Mono', monospace;
-            font-size: 0.75rem;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-
-        .flashcard-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .flashcard-content {
-            font-size: 0.95rem;
-            color: var(--text-secondary);
-            line-height: 1.6;
-        }
-
-        /* EDUCATION SECTION */
-        .education-section {
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .education-item {
-            background: var(--light-surface);
-            border: 2px solid var(--border-color);
-            border-radius: 4px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            transition: all 0.3s ease;
-        }
-
-        .education-item:hover {
-            border-color: var(--primary);
-            box-shadow: 0 5px 15px rgba(166, 124, 82, 0.1);
-        }
-
-        .education-degree {
-            font-family: 'Barlow Condensed', sans-serif;
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 0.3rem;
-        }
-
-        .education-institution {
-            color: var(--text-secondary);
-            font-size: 0.95rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .education-date {
-            font-family: 'DM Mono', monospace;
-            font-size: 0.85rem;
-            color: var(--primary);
-        }
-
-        /* CERTIFICATIONS SECTION */
-        .certifications-section {
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .cert-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .cert-card {
-            background: var(--light-surface);
-            border: 2px solid var(--border-color);
-            border-radius: 4px;
-            padding: 1.5rem;
-            transition: all 0.3s ease;
-            text-align: center;
-        }
-
-        .cert-card:hover {
-            border-color: var(--primary);
-            transform: translateY(-4px);
-            box-shadow: 0 5px 15px rgba(166, 124, 82, 0.1);
-        }
-
-        .cert-icon {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .cert-name {
-            font-family: 'Barlow Condensed', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .cert-issuer {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-        }
-
-        .cert-status {
-            display: inline-block;
-            font-family: 'DM Mono', monospace;
-            font-size: 0.75rem;
-            padding: 0.4rem 0.8rem;
-            background: rgba(166, 124, 82, 0.1);
-            color: var(--primary);
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        /* SKILLS */
-        .skills-section {
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 1rem;
-        }
-
-        .skill-category {
-            background: var(--light-surface);
-            border: 2px solid var(--border-color);
-            border-radius: 4px;
-            padding: 1.5rem;
-        }
-
-        .skill-category h4 {
-            color: var(--primary);
-            margin-bottom: 1rem;
-            font-size: 1rem;
-        }
-
-        .skill-item {
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-            padding-left: 0.6rem;
-            border-left: 2px solid var(--primary);
-        }
-
-        /* LANGUAGES */
-        .languages-section {
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .languages-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 1rem;
-        }
-
-        .language-card {
-            background: var(--light-surface);
-            border: 2px solid var(--border-color);
-            border-radius: 4px;
-            padding: 1.5rem;
-            text-align: center;
-        }
-
-        .language-name {
-            font-family: 'Barlow Condensed', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .language-level {
-            font-family: 'DM Mono', monospace;
-            font-size: 0.8rem;
-            color: var(--primary);
-        }
-
-        /* FOOTER */
-        footer {
-            background: var(--light-surface);
-            padding: 2rem;
-            text-align: center;
-            border-top: 2px solid var(--border-color);
-            margin-top: 4rem;
-        }
-
-        .contact-links {
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            flex-wrap: wrap;
-            margin: 1rem 0;
-        }
-
-        .contact-links a {
-            color: var(--primary);
-            text-decoration: none;
-            font-family: 'DM Mono', monospace;
-            font-size: 0.9rem;
-        }
-
-        /* RESPONSIVE */
-        @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 2rem;
-            }
-
-            .section-title {
-                font-size: 1.5rem;
-            }
-
-            .image-slider {
-                height: 250px;
-            }
-
-            .cert-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+  /* ===== RESPONSIVE ===== */
+  @media (max-width:768px){
+    .slide{ padding:5vh 6vw; }
+    .slide h1.hero-name{ font-size:2.1rem; }
+    .exp-caption h2{ font-size:1.6rem; }
+    .exp-facts h2{ font-size:1.8rem; }
+    .facts-grid{ grid-template-columns:1fr; }
+    .cert-grid{ grid-template-columns:repeat(2,1fr); }
+    .lang-grid{ grid-template-columns:repeat(2,1fr); }
+    .summary-grid{ grid-template-columns:repeat(2,1fr); }
+    #trail{ right:12px; }
+    #nav{ right:16px; bottom:16px; }
+    .nav-btn{ width:44px; height:44px; }
+    .skill-pics{ grid-template-columns:1fr 1fr; }
+  }
+</style>
 </head>
 <body>
-    <!-- HERO -->
-    <section class="hero">
-        <img src="Images/Hero.jpeg" alt="Alae Tazi" class="hero-photo">
-        <h1>Alae Tazi</h1>
-        <div class="hero-subtitle">Football Operations</div>
-        <p class="hero-desc">
-            Competition operations specialist. Tournament organizer across elite international events.
-        </p>
-        <a href="#experiences" class="cta-button">View My Journey</a>
-    </section>
 
-    <!-- EXPERIENCES -->
-    <section class="experiences-section" id="experiences">
-        <h2 class="section-title">My Journey</h2>
+<div id="trail"></div>
 
-        <!-- Experience: AGON -->
-        <div class="experience-item">
-            <div class="image-slider" data-images="AGON_1.jpeg,AGON_2.jpeg,AGON_4.jpeg,AGON_6.jpeg">
-                <div class="image-counter"><span class="current">1</span>/<span class="total">4</span></div>
-            </div>
-            <div class="flashcards-container" style="display: none;">
-                <div class="flashcard">
-                    <div class="flashcard-label">Event</div>
-                    <div class="flashcard-title">AGON</div>
-                    <div class="flashcard-content">Morocco's leading national debate competition</div>
-                </div>
-                <div class="flashcard">
-                    <div class="flashcard-label">Role</div>
-                    <div class="flashcard-title">Founder & Event Director</div>
-                    <div class="flashcard-content">2021 — 2024</div>
-                </div>
-                <div class="flashcard">
-                    <div class="flashcard-label">Impact</div>
-                    <div class="flashcard-title">500+ Participants</div>
-                    <div class="flashcard-content">3 successful editions with national recognition</div>
-                </div>
-                <div class="flashcard">
-                    <div class="flashcard-label">Link</div>
-                    <a href="https://www.instagram.com/the.great.debaters.encgt?igsh=aG9rMGhydm9jc2w0" style="color: var(--primary); text-decoration: none; font-weight: 600;">View on Instagram →</a>
-                </div>
-            </div>
+<div class="skip-hint">scroll or use arrows ↓</div>
+<div id="nav">
+  <button class="nav-btn" id="prevBtn" aria-label="Previous">←</button>
+  <button class="nav-btn" id="nextBtn" aria-label="Next">→</button>
+</div>
+
+<div id="deck">
+
+  <!-- 0 HERO -->
+  <section class="slide" data-slide="hero">
+    <div class="hero-photo"><img src="Images/Hero.jpeg" alt="Alae Tazi"></div>
+    <div class="eyebrow">Football Competition Operations</div>
+    <h1 class="hero-name">Alae Tazi</h1>
+    <p class="hero-desc">Tournament organizer across elite international events. Direct experience with AFCON 2025, Tangier International Cup 2026, and Barça Academy.</p>
+    <a href="#" class="cta" data-next>View My Journey →</a>
+  </section>
+
+  <!-- 1 AGON -->
+  <section class="slide exp-slide" data-slide="agon">
+    <div class="exp-frame">
+      <div class="exp-img-stack" data-images="AGON_1.jpeg,AGON_2.jpeg,AGON_4.jpeg,AGON_6.jpeg"></div>
+      <div class="exp-counter"><span class="cur">1</span> / <span class="tot">4</span></div>
+      <div class="exp-caption">
+        <div class="eyebrow">2021 — 2024</div>
+        <h2>AGON</h2>
+        <div class="role">Founder &amp; Event Director</div>
+      </div>
+      <div class="exp-facts">
+        <div class="eyebrow">2021 — 2024</div>
+        <h2>AGON</h2>
+        <div class="role">Founder &amp; Event Director</div>
+        <div class="facts-grid">
+          <div class="fact-card"><div class="fl">Participants</div><div class="fv">500+ Debaters</div></div>
+          <div class="fact-card"><div class="fl">Editions</div><div class="fv">3 Successful Events</div></div>
+          <div class="fact-card"><div class="fl">Status</div><div class="fv">Top Debate Competition in Morocco</div></div>
+          <div class="fact-card"><div class="fl">Impact</div><div class="fv">National Recognition</div></div>
         </div>
+        <a href="https://www.instagram.com/the.great.debaters.encgt?igsh=aG9rMGhydm9jc2w0" class="cta ghost" target="_blank">View on Instagram →</a>
+      </div>
+    </div>
+  </section>
 
-        <!-- Experience: Surf Cup -->
-        <div class="experience-item">
-            <div class="image-slider" data-images="Surf_Cup_2024_1.jpeg,Surf_Cup_2024_3.jpeg,Surf_Cup_2024_8.jpeg,Surf_Cup_2024_9.jpeg">
-                <div class="image-counter"><span class="current">1</span>/<span class="total">4</span></div>
-            </div>
-            <div class="flashcards-container" style="display: none;">
-                <div class="flashcard">
-                    <div class="flashcard-label">Event</div>
-                    <div class="flashcard-title">Surf Cup International 2024</div>
-                    <div class="flashcard-content">Salou, Spain | November 2024</div>
-                </div>
-                <div class="flashcard">
-                    <div class="flashcard-label">Role</div>
-                    <div class="flashcard-title">Field Coordinator</div>
-                    <div class="flashcard-content">On-ground operations & team liaison</div>
-                </div>
-                <div class="flashcard">
-                    <div class="flashcard-label">Scale</div>
-                    <div class="flashcard-title">180+ Teams | 26 Countries</div>
-                    <div class="flashcard-content">Multi-pitch concurrent matches</div>
-                </div>
-                <div class="flashcard">
-                    <div class="flashcard-label">Link</div>
-                    <a href="https://globalsportsexperiences.com/surf-cup-international-salou-2024-recap/" style="color: var(--primary); text-decoration: none; font-weight: 600;">View Recap →</a>
-                </div>
-            </div>
+  <!-- 2 SURF CUP -->
+  <section class="slide exp-slide" data-slide="surf">
+    <div class="exp-frame">
+      <div class="exp-img-stack" data-images="Surf_Cup_2024_1.jpeg,Surf_Cup_2024_3.jpeg,Surf_Cup_2024_8.jpeg,Surf_Cup_2024_9.jpeg"></div>
+      <div class="exp-counter"><span class="cur">1</span> / <span class="tot">4</span></div>
+      <div class="exp-caption">
+        <div class="eyebrow">November 2024</div>
+        <h2>Surf Cup International Salou</h2>
+        <div class="role">Field Coordinator</div>
+      </div>
+      <div class="exp-facts">
+        <div class="eyebrow">November 2024</div>
+        <h2>Surf Cup International Salou</h2>
+        <div class="role">Field Coordinator</div>
+        <div class="facts-grid">
+          <div class="fact-card"><div class="fl">Teams</div><div class="fv">180+ from 26 countries</div></div>
+          <div class="fact-card"><div class="fl">Location</div><div class="fv">Salou, Spain</div></div>
+          <div class="fact-card"><div class="fl">Categories</div><div class="fv">Boys U10-19 | Girls U12-19</div></div>
+          <div class="fact-card"><div class="fl">Venue</div><div class="fv">Mediterranean Sport Village</div></div>
         </div>
+        <a href="https://globalsportsexperiences.com/surf-cup-international-salou-2024-recap/" class="cta ghost" target="_blank">Read Recap →</a>
+      </div>
+    </div>
+  </section>
 
-        <!-- Experience: Barça -->
-        <div class="experience-item">
-            <div class="image-slider" data-images="BA_2.jpeg,BA_3.jpeg,BA_9.jpeg,BA_12.jpeg,FCB_Tour_2025_1.jpeg,FCB_Tour_2025_3.jpeg">
-                <div class="image-counter"><span class="current">1</span>/<span class="total">6</span></div>
-            </div>
-            <div class="flashcards-container" style="display: none;">
-                <div class="flashcard">
-                    <div class="flashcard-label">Organization</div>
-                    <div class="flashcard-title">Barça Academy – FC Barcelona</div>
-                    <div class="flashcard-content">April — August 2025</div>
-                </div>
-                <div class="flashcard">
-                    <div class="flashcard-label">Role</div>
-                    <div class="flashcard-title">Business Development Assistant</div>
-                    <div class="flashcard-content">3 major projects across 4 continents</div>
-                </div>
-                <div class="flashcard">
-                    <div class="flashcard-label">Key Project</div>
-                    <div class="flashcard-title">Summer Camps 2025</div>
-                    <div class="flashcard-content">400+ coaches, 115 camps, 4500+ players worldwide</div>
-                </div>
-                <div class="flashcard">
-                    <div class="flashcard-label">Link</div>
-                    <a href="https://barcaacademy.fcbarcelona.com/en/" style="color: var(--primary); text-decoration: none; font-weight: 600;">Visit Academy →</a>
-                </div>
-            </div>
+  <!-- 3 BARÇA -->
+  <section class="slide exp-slide" data-slide="barca">
+    <div class="exp-frame">
+      <div class="exp-img-stack" data-images="BA_2.jpeg,BA_3.jpeg,BA_9.jpeg,BA_12.jpeg,FCB_Tour_2025_1.jpeg,FCB_Tour_2025_3.jpeg"></div>
+      <div class="exp-counter"><span class="cur">1</span> / <span class="tot">6</span></div>
+      <div class="exp-caption">
+        <div class="eyebrow">April — August 2025</div>
+        <h2>Barça Academy — FC Barcelona</h2>
+        <div class="role">Business Development Assistant</div>
+      </div>
+      <div class="exp-facts">
+        <div class="eyebrow">April — August 2025</div>
+        <h2>Barça Academy</h2>
+        <div class="role">Business Development Assistant</div>
+        <div class="facts-grid">
+          <div class="fact-card"><div class="fl">Summer Camps</div><div class="fv">400+ coaches, 115 camps</div></div>
+          <div class="fact-card"><div class="fl">Reach</div><div class="fv">4500+ players, 4 continents</div></div>
+          <div class="fact-card"><div class="fl">First Team Tour</div><div class="fv">Japan &amp; South Korea</div></div>
+          <div class="fact-card"><div class="fl">Strategy</div><div class="fv">Morocco, Saudi Arabia, Francophone Africa</div></div>
         </div>
+        <a href="https://barcaacademy.fcbarcelona.com/en/" class="cta ghost" target="_blank">Visit Academy →</a>
+      </div>
+    </div>
+  </section>
 
-        <!-- Experience: AFCON -->
-        <div class="experience-item">
-            <div class="image-slider" data-images="AFCON_5.jpeg,AFCON_6.jpeg,AFCON_7.jpeg,AFCON_8.jpeg">
-                <div class="image-counter"><span class="current">1</span>/<span class="total">4</span></div>
-            </div>
-            <div class="flashcards-container" style="display: none;">
-                <div class="flashcard">
-                    <div class="flashcard-label">Tournament</div>
-                    <div class="flashcard-title">AFCON 2025</div>
-                    <div class="flashcard-content">Africa Cup of Nations — Morocco</div>
-                </div>
-                <div class="flashcard">
-                    <div class="flashcard-label">Role</div>
-                    <div class="flashcard-title">Competitions Team Member</div>
-                    <div class="flashcard-content">December 2025 — January 2026</div>
-                </div>
-                <div class="flashcard">
-                    <div class="flashcard-label">Coverage</div>
-                    <div class="flashcard-title">Group Stages + Semi-Finals</div>
-                    <div class="flashcard-content">Grand Stadium Tangier | CAF Standards</div>
-                </div>
-                <div class="flashcard">
-                    <div class="flashcard-label">Link</div>
-                    <a href="https://www.cafonline.com/afcon2025/" style="color: var(--primary); text-decoration: none; font-weight: 600;">Official Site →</a>
-                </div>
-            </div>
+  <!-- 4 AFCON -->
+  <section class="slide exp-slide" data-slide="afcon">
+    <div class="exp-frame">
+      <div class="exp-img-stack" data-images="AFCON_5.jpeg,AFCON_6.jpeg,AFCON_7.jpeg,AFCON_8.jpeg"></div>
+      <div class="exp-counter"><span class="cur">1</span> / <span class="tot">4</span></div>
+      <div class="exp-caption">
+        <div class="eyebrow">December 2025 — January 2026</div>
+        <h2>AFCON 2025</h2>
+        <div class="role">Competitions Team Member</div>
+      </div>
+      <div class="exp-facts">
+        <div class="eyebrow">December 2025 — January 2026</div>
+        <h2>AFCON 2025</h2>
+        <div class="role">Competitions Team Member</div>
+        <div class="facts-grid">
+          <div class="fact-card"><div class="fl">Tournament</div><div class="fv">Africa Cup of Nations — Morocco</div></div>
+          <div class="fact-card"><div class="fl">Coverage</div><div class="fv">Group Stages + Semis</div></div>
+          <div class="fact-card"><div class="fl">Venue</div><div class="fv">Grand Stadium Tangier</div></div>
+          <div class="fact-card"><div class="fl">Protocol</div><div class="fv">CAF Standards</div></div>
         </div>
+        <a href="https://www.cafonline.com/afcon2025/" class="cta ghost" target="_blank">Official Site →</a>
+      </div>
+    </div>
+  </section>
 
-        <!-- Experience: TIC -->
-        <div class="experience-item">
-            <div class="image-slider" data-images="TIC_2026_1.jpeg,TIC_2026_2.jpeg,TIC_2026_3.jpeg,TIC_2026_4.jpeg,TIC_2026_5.jpeg,TIC_2026_6.jpeg">
-                <div class="image-counter"><span class="current">1</span>/<span class="total">6</span></div>
-            </div>
-            <div class="flashcards-container" style="display: none;">
-                <div class="flashcard">
-                    <div class="flashcard-label">Tournament</div>
-                    <div class="flashcard-title">Tangier International Cup 2026</div>
-                    <div class="flashcard-content">April — May 2026 | 6th Edition</div>
-                </div>
-                <div class="flashcard">
-                    <div class="flashcard-label">Role</div>
-                    <div class="flashcard-title">Project Manager</div>
-                    <div class="flashcard-content">End-to-end tournament organization</div>
-                </div>
-                <div class="flashcard">
-                    <div class="flashcard-label">Scale</div>
-                    <div class="flashcard-title">350+ Players | 6 Nations</div>
-                    <div class="flashcard-content">U13, U11, Women's categories | Ibn Khaldoun Stadium</div>
-                </div>
-                <div class="flashcard">
-                    <div class="flashcard-label">Link</div>
-                    <a href="https://tangierinternationalcup.com/" style="color: var(--primary); text-decoration: none; font-weight: 600;">Visit Website →</a>
-                </div>
-            </div>
+  <!-- 5 TIC -->
+  <section class="slide exp-slide" data-slide="tic">
+    <div class="exp-frame">
+      <div class="exp-img-stack" data-images="TIC_2026_1.jpeg,TIC_2026_2.jpeg,TIC_2026_3.jpeg,TIC_2026_4.jpeg,TIC_2026_5.jpeg,TIC_2026_6.jpeg"></div>
+      <div class="exp-counter"><span class="cur">1</span> / <span class="tot">6</span></div>
+      <div class="exp-caption">
+        <div class="eyebrow">April — May 2026</div>
+        <h2>Tangier International Cup</h2>
+        <div class="role">Project Manager</div>
+      </div>
+      <div class="exp-facts">
+        <div class="eyebrow">April — May 2026 · 6th Edition</div>
+        <h2>Tangier International Cup</h2>
+        <div class="role">Project Manager</div>
+        <div class="facts-grid">
+          <div class="fact-card"><div class="fl">Players</div><div class="fv">350+ Athletes</div></div>
+          <div class="fact-card"><div class="fl">Nations</div><div class="fv">Morocco, Spain, Portugal, England, France, Belgium</div></div>
+          <div class="fact-card"><div class="fl">Categories</div><div class="fv">U13, U11, Women's</div></div>
+          <div class="fact-card"><div class="fl">Venue</div><div class="fv">Ibn Khaldoun Stadium</div></div>
         </div>
-    </section>
+        <a href="https://tangierinternationalcup.com/" class="cta ghost" target="_blank">Visit Website →</a>
+      </div>
+    </div>
+  </section>
 
-    <!-- EDUCATION -->
-    <section class="education-section">
-        <h2 class="section-title">Education</h2>
-        
-        <div class="education-item">
-            <div class="education-degree">MSc Sports Management</div>
-            <div class="education-institution">European Sports Business School</div>
-            <div class="education-date">2024 — 2025 | Valencia, Spain</div>
+  <!-- 6 EDUCATION -->
+  <section class="slide" data-slide="education">
+    <div class="eyebrow">Education</div>
+    <div class="edu-card">
+      <div class="edu-photo"><img src="Images/Graduation.jpeg" alt="Graduation"></div>
+      <div class="edu-list">
+        <div class="edu-item">
+          <div class="edu-logo">ESB</div>
+          <div>
+            <div class="edu-degree">MSc Sports Management</div>
+            <div class="edu-school">European Sports Business School — Valencia, Spain</div>
+            <div class="edu-year">2024 — 2025</div>
+          </div>
         </div>
-
-        <div class="education-item">
-            <div class="education-degree">MSc International Business</div>
-            <div class="education-institution">ENCG Tanger (National School of Business)</div>
-            <div class="education-date">2019 — 2024 | Tangier, Morocco</div>
+        <div class="edu-item">
+          <div class="edu-logo">ENCG</div>
+          <div>
+            <div class="edu-degree">MSc International Business</div>
+            <div class="edu-school">ENCG Tanger — Tangier, Morocco</div>
+            <div class="edu-year">2019 — 2024</div>
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <!-- CERTIFICATIONS -->
-    <section class="certifications-section">
-        <h2 class="section-title">Certifications</h2>
-        
-        <div class="cert-grid">
-            <div class="cert-card">
-                <div class="cert-icon">🎯</div>
-                <div class="cert-name">Hudl Certified Analyst</div>
-                <div class="cert-issuer">Hudl</div>
-                <div class="cert-status">In Progress</div>
-            </div>
+  <!-- 7 CERTIFICATIONS -->
+  <section class="slide" data-slide="certs">
+    <div class="eyebrow">Certifications</div>
+    <h2 style="margin-bottom:2rem;">Always Leveling Up</h2>
+    <div class="cert-grid">
+      <div class="cert-card"><div class="cert-logo">H</div><div class="cert-title">Hudl Certified Analyst</div><div class="cert-issuer">Hudl</div><div class="cert-year">In Progress</div></div>
+      <div class="cert-card"><div class="cert-logo">PBI</div><div class="cert-title">Power BI Certified</div><div class="cert-issuer">Microsoft</div><div class="cert-year">In Progress</div></div>
+      <div class="cert-card"><div class="cert-logo">FIFA</div><div class="cert-title">Tournament Management</div><div class="cert-issuer">FIFA Forward</div><div class="cert-year">Planned</div></div>
+      <div class="cert-card"><div class="cert-logo">UEFA</div><div class="cert-title">Football Operations Diploma</div><div class="cert-issuer">UEFA</div><div class="cert-year">Planned</div></div>
+      <div class="cert-card"><div class="cert-logo">HS</div><div class="cert-title">CRM Certification</div><div class="cert-issuer">HubSpot</div><div class="cert-year">Planned</div></div>
+      <div class="cert-card"><div class="cert-logo">NS</div><div class="cert-title">Video Analysis</div><div class="cert-issuer">Nacsport</div><div class="cert-year">Planned</div></div>
+    </div>
+  </section>
 
-            <div class="cert-card">
-                <div class="cert-icon">📊</div>
-                <div class="cert-name">Microsoft Power BI</div>
-                <div class="cert-issuer">Microsoft</div>
-                <div class="cert-status">In Progress</div>
-            </div>
+  <!-- 8 SKILLS: Tournament Operations -->
+  <section class="slide" data-slide="skill1">
+    <div class="skill-slide-inner">
+      <div class="eyebrow">Core Skills · 01</div>
+      <h2 style="margin-bottom:1.6rem;">Tournament Operations</h2>
+      <div class="skill-sub">
+        <div class="skill-row">End-to-end event management</div>
+        <div class="skill-row">Fixture scheduling</div>
+        <div class="skill-row">Matchday protocol compliance</div>
+      </div>
+      <div class="skill-pics">
+        <div class="ph"><img src="Images/TIC_2026_3.jpeg" alt=""></div>
+        <div class="ph"><img src="Images/AFCON_6.jpeg" alt=""></div>
+      </div>
+    </div>
+  </section>
 
-            <div class="cert-card">
-                <div class="cert-icon">⚽</div>
-                <div class="cert-name">FIFA Forward - Tournament Management</div>
-                <div class="cert-issuer">FIFA</div>
-                <div class="cert-status">Planned</div>
-            </div>
+  <!-- 9 SKILLS: Logistics -->
+  <section class="slide" data-slide="skill2">
+    <div class="skill-slide-inner">
+      <div class="eyebrow">Core Skills · 02</div>
+      <h2 style="margin-bottom:1.6rem;">Logistics &amp; Coordination</h2>
+      <div class="skill-sub">
+        <div class="skill-row">Transport planning</div>
+        <div class="skill-row">Hotel operations</div>
+        <div class="skill-row">Inter-venue coordination</div>
+      </div>
+      <div class="skill-pics">
+        <div class="ph"><img src="Images/Surf_Cup_2024_8.jpeg" alt=""></div>
+        <div class="ph"><img src="Images/TIC_2026_5.jpeg" alt=""></div>
+      </div>
+    </div>
+  </section>
 
-            <div class="cert-card">
-                <div class="cert-icon">🏆</div>
-                <div class="cert-name">UEFA Diploma in Football Operations</div>
-                <div class="cert-issuer">UEFA</div>
-                <div class="cert-status">Planned</div>
-            </div>
+  <!-- 10 SKILLS: Data -->
+  <section class="slide" data-slide="skill3">
+    <div class="skill-slide-inner">
+      <div class="eyebrow">Core Skills · 03</div>
+      <h2 style="margin-bottom:1.6rem;">Data &amp; Administration</h2>
+      <div class="skill-sub">
+        <div class="skill-row">Power BI &amp; Excel (advanced)</div>
+        <div class="skill-row">Database management</div>
+        <div class="skill-row">Performance reporting</div>
+      </div>
+      <div class="skill-pics">
+        <div class="ph"><img src="Images/BA_9.jpeg" alt=""></div>
+        <div class="ph"><img src="Images/FCB_Tour_2025_1.jpeg" alt=""></div>
+      </div>
+    </div>
+  </section>
 
-            <div class="cert-card">
-                <div class="cert-icon">📈</div>
-                <div class="cert-name">HubSpot CRM Certification</div>
-                <div class="cert-issuer">HubSpot</div>
-                <div class="cert-status">Planned</div>
-            </div>
+  <!-- 11 SKILLS: Stakeholder -->
+  <section class="slide" data-slide="skill4">
+    <div class="skill-slide-inner">
+      <div class="eyebrow">Core Skills · 04</div>
+      <h2 style="margin-bottom:1.6rem;">Stakeholder Management</h2>
+      <div class="skill-sub">
+        <div class="skill-row">Federation &amp; club liaison</div>
+        <div class="skill-row">Multicultural team coordination</div>
+        <div class="skill-row">CRM systems (HubSpot, SAP)</div>
+      </div>
+      <div class="skill-pics">
+        <div class="ph"><img src="Images/AGON_2.jpeg" alt=""></div>
+        <div class="ph"><img src="Images/AFCON_8.jpeg" alt=""></div>
+      </div>
+    </div>
+  </section>
 
-            <div class="cert-card">
-                <div class="cert-icon">🎬</div>
-                <div class="cert-name">Nacsport Video Analysis</div>
-                <div class="cert-issuer">Nacsport</div>
-                <div class="cert-status">Planned</div>
-            </div>
-        </div>
-    </section>
+  <!-- 12 LANGUAGES -->
+  <section class="slide" data-slide="languages">
+    <div class="eyebrow">Languages</div>
+    <h2 style="margin-bottom:2rem;">Speaking the Game Globally</h2>
+    <div class="lang-grid">
+      <div class="lang-card"><div class="lang-name">Arabic</div><div class="lang-level">Native</div></div>
+      <div class="lang-card"><div class="lang-name">English</div><div class="lang-level">C2 — Fluent</div></div>
+      <div class="lang-card"><div class="lang-name">French</div><div class="lang-level">C1 — Fluent</div></div>
+      <div class="lang-card"><div class="lang-name">Spanish</div><div class="lang-level">B1</div></div>
+      <div class="lang-card"><div class="lang-name">German</div><div class="lang-level">B1</div></div>
+      <div class="lang-card"><div class="lang-name">Catalan</div><div class="lang-level">A2</div></div>
+    </div>
+  </section>
 
-    <!-- SKILLS -->
-    <section class="skills-section">
-        <h2 class="section-title">Skills & Tools</h2>
-        
-        <div class="skills-grid">
-            <div class="skill-category">
-                <h4>Tournament Operations</h4>
-                <div class="skill-item">Event management</div>
-                <div class="skill-item">Fixture scheduling</div>
-                <div class="skill-item">Protocol compliance</div>
-            </div>
-            <div class="skill-category">
-                <h4>Logistics</h4>
-                <div class="skill-item">Transport planning</div>
-                <div class="skill-item">Hotel operations</div>
-                <div class="skill-item">Team coordination</div>
-            </div>
-            <div class="skill-category">
-                <h4>Data & Analytics</h4>
-                <div class="skill-item">Power BI</div>
-                <div class="skill-item">Excel (Advanced)</div>
-                <div class="skill-item">Database management</div>
-            </div>
-            <div class="skill-category">
-                <h4>Tools</h4>
-                <div class="skill-item">Notion</div>
-                <div class="skill-item">HubSpot</div>
-                <div class="skill-item">Adobe Suite</div>
-            </div>
-        </div>
-    </section>
+  <!-- 13 SUMMARY -->
+  <section class="slide" data-slide="summary">
+    <div class="summary-photo"><img src="Images/Hero.jpeg" alt="Alae Tazi"></div>
+    <div class="eyebrow">The Full Picture</div>
+    <h2 style="margin-bottom:.5rem;">Alae Tazi</h2>
+    <div class="summary-grid">
+      <div class="summary-stat"><div class="summary-num">5</div><div class="summary-label">Major Events</div></div>
+      <div class="summary-stat"><div class="summary-num">3+</div><div class="summary-label">Years Experience</div></div>
+      <div class="summary-stat"><div class="summary-num">6</div><div class="summary-label">Languages</div></div>
+      <div class="summary-stat"><div class="summary-num">4</div><div class="summary-label">Continents Worked</div></div>
+    </div>
+    <div class="summary-skills">
+      <span>Tournament Operations</span><span>Logistics</span><span>Data &amp; Reporting</span><span>Stakeholder Management</span>
+    </div>
+    <a href="#" class="cta" data-next style="margin-top:1.2rem;">Get In Touch →</a>
+  </section>
 
-    <!-- LANGUAGES -->
-    <section class="languages-section">
-        <h2 class="section-title">Languages</h2>
-        
-        <div class="languages-grid">
-            <div class="language-card">
-                <div class="language-name">Arabic</div>
-                <div class="language-level">Native</div>
-            </div>
-            <div class="language-card">
-                <div class="language-name">English</div>
-                <div class="language-level">C2 — Fluent</div>
-            </div>
-            <div class="language-card">
-                <div class="language-name">French</div>
-                <div class="language-level">C1 — Fluent</div>
-            </div>
-            <div class="language-card">
-                <div class="language-name">Spanish</div>
-                <div class="language-level">B1</div>
-            </div>
-            <div class="language-card">
-                <div class="language-name">Catalan</div>
-                <div class="language-level">A2</div>
-            </div>
-        </div>
-    </section>
+  <!-- 14 CONTACT -->
+  <section class="slide" data-slide="contact">
+    <div class="eyebrow">Let's Work Together</div>
+    <h2 style="margin-bottom:.6rem;">Get Connected</h2>
+    <p class="hero-desc">Open to competition operations roles and international event management.</p>
+    <div class="contact-links">
+      <a href="mailto:tazi.alae.01@gmail.com">Email</a>
+      <a href="https://linkedin.com/in/alae-tazi" target="_blank">LinkedIn</a>
+      <a href="tel:+212656560965">+212 656 56 09 65</a>
+    </div>
+    <a href="CV/Alae_TAZI_CV_EN.pdf" class="cta" download>Download CV →</a>
+    <p style="color:var(--text-soft); font-size:.8rem; margin-top:2.5rem;">© 2026 Alae Tazi. All rights reserved.</p>
+  </section>
 
-    <!-- FOOTER -->
-    <footer>
-        <h3>Let's Work Together</h3>
-        <p style="color: var(--text-secondary); margin-top: 0.5rem; font-size: 0.95rem;">
-            Open to competition operations roles and international event management.
-        </p>
-        <div class="contact-links">
-            <a href="mailto:tazi.alae.01@gmail.com">Email</a>
-            <a href="https://linkedin.com/in/alae-tazi">LinkedIn</a>
-            <a href="tel:+212656560965">+212 656 56 09 65</a>
-        </div>
-        <p style="color: var(--text-secondary); margin-top: 1rem; font-size: 0.85rem;">
-            © 2026 Alae Tazi. All rights reserved.
-        </p>
-    </footer>
+</div>
 
-    <script>
-        // Image slider functionality
-        document.querySelectorAll('.image-slider').forEach(slider => {
-            const images = slider.dataset.images.split(',');
-            let currentIndex = 0;
-            const container = slider.parentElement;
-            const flashcardsContainer = container.querySelector('.flashcards-container');
-            const counter = slider.querySelector('.current');
+<script>
+(function(){
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  let idx = 0;
+  let animating = false;
 
-            // Load initial image
-            function showImage() {
-                // Remove all existing images
-                slider.querySelectorAll('img').forEach(img => img.remove());
+  // build trail
+  const trail = document.getElementById('trail');
+  slides.forEach((s,i)=>{
+    const dot = document.createElement('div');
+    dot.className = 'dot';
+    dot.dataset.i = i;
+    trail.appendChild(dot);
+    if(i < total-1){
+      const seg = document.createElement('div');
+      seg.className='seg';
+      trail.appendChild(seg);
+    }
+  });
+  const dots = trail.querySelectorAll('.dot');
 
-                // Create and add new image
-                const img = document.createElement('img');
-                img.src = `Images/${images[currentIndex]}`;
-                img.alt = 'Experience image';
-                slider.appendChild(img);
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
 
-                // Update counter
-                counter.textContent = currentIndex + 1;
-            }
+  function updateTrail(){
+    dots.forEach((d,i)=>{
+      d.classList.toggle('done', i < idx);
+      d.classList.toggle('current', i === idx);
+    });
+  }
 
-            // Initial load
-            showImage();
+  function updateNav(){
+    prevBtn.disabled = idx === 0;
+  }
 
-            // Click to next image
-            slider.addEventListener('click', () => {
-                currentIndex++;
-                if (currentIndex >= images.length) {
-                    // Show flashcards
-                    flashcardsContainer.style.display = 'grid';
-                    slider.style.display = 'none';
-                } else {
-                    showImage();
-                }
-            });
+  function goTo(newIdx){
+    if(newIdx < 0 || newIdx >= total || animating) return;
+    animating = true;
+    slides[idx].classList.remove('active');
+    idx = newIdx;
+    slides[idx].classList.add('active');
+    updateTrail();
+    updateNav();
+    initExpSlide(slides[idx]);
 
-            // Add swipe support for mobile
-            let touchStartX = 0;
-            slider.addEventListener('touchstart', (e) => {
-                touchStartX = e.touches[0].clientX;
-            });
+    // if reached last slide, unlock scrolling
+    if(idx === total - 1){
+      setTimeout(()=>{
+        document.body.classList.add('unlocked');
+        slides.forEach(s=>s.classList.add('active'));
+      }, 700);
+    }
+    setTimeout(()=>{ animating = false; }, 550);
+  }
 
-            slider.addEventListener('touchend', (e) => {
-                const touchEndX = e.changedTouches[0].clientX;
-                if (touchStartX > touchEndX) {
-                    slider.click();
-                }
-            });
-        });
-    </script>
+  prevBtn.addEventListener('click', ()=> goTo(idx-1));
+  nextBtn.addEventListener('click', ()=> goTo(idx+1));
+  document.querySelectorAll('[data-next]').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{ e.preventDefault(); goTo(idx+1); });
+  });
+
+  // wheel navigation (locked mode only)
+  let wheelCooldown = false;
+  window.addEventListener('wheel', (e)=>{
+    if(document.body.classList.contains('unlocked')) return;
+    if(wheelCooldown) return;
+    if(e.deltaY > 30){ wheelCooldown = true; goTo(idx+1); setTimeout(()=>wheelCooldown=false, 700); }
+    else if(e.deltaY < -30){ wheelCooldown = true; goTo(idx-1); setTimeout(()=>wheelCooldown=false, 700); }
+  }, {passive:true});
+
+  // touch navigation (locked mode only)
+  let touchStartY = 0;
+  window.addEventListener('touchstart', (e)=>{ touchStartY = e.touches[0].clientY; }, {passive:true});
+  window.addEventListener('touchend', (e)=>{
+    if(document.body.classList.contains('unlocked')) return;
+    const dy = touchStartY - e.changedTouches[0].clientY;
+    if(Math.abs(dy) < 40) return;
+    if(dy > 0) goTo(idx+1); else goTo(idx-1);
+  }, {passive:true});
+
+  // keyboard
+  window.addEventListener('keydown', (e)=>{
+    if(document.body.classList.contains('unlocked')) return;
+    if(e.key === 'ArrowDown' || e.key === 'ArrowRight'){ goTo(idx+1); }
+    if(e.key === 'ArrowUp' || e.key === 'ArrowLeft'){ goTo(idx-1); }
+  });
+
+  // ===== Experience slide image-cycle logic =====
+  function initExpSlide(slide){
+    const stack = slide.querySelector('.exp-img-stack');
+    if(!stack) return;
+    if(stack.dataset.inited) { return; }
+    stack.dataset.inited = '1';
+
+    const files = stack.dataset.images.split(',');
+    const counter = slide.querySelector('.exp-counter');
+    const curEl = counter ? counter.querySelector('.cur') : null;
+    const facts = slide.querySelector('.exp-facts');
+    let i = 0;
+
+    files.forEach((f)=>{
+      const img = document.createElement('img');
+      img.src = 'Images/' + f;
+      img.alt = '';
+      stack.appendChild(img);
+    });
+    const imgs = stack.querySelectorAll('img');
+    imgs[0].classList.add('show');
+
+    function cycle(){
+      if(i >= files.length - 1){
+        setTimeout(()=>{ facts.classList.add('show'); }, 1400);
+        return;
+      }
+      setTimeout(()=>{
+        imgs[i].classList.remove('show');
+        i++;
+        imgs[i].classList.add('show');
+        if(curEl) curEl.textContent = i+1;
+        cycle();
+      }, 1600);
+    }
+    cycle();
+  }
+
+  // init
+  slides[0].classList.add('active');
+  updateTrail();
+  updateNav();
+})();
+</script>
 </body>
 </html>
