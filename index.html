@@ -115,58 +115,53 @@
   .cta.ghost{ background:transparent; color:var(--primary); }
   .cta.ghost:hover{ background:var(--primary); color:#fff; }
 
-  /* ===== EXPERIENCE SLIDES ===== */
-  .exp-slide{ position:relative; overflow:hidden; padding:0; }
-  .exp-frame{
-    width:100%; height:100%; position:relative;
-    display:flex; align-items:center; justify-content:center;
+  /* ===== EXPERIENCE SLIDES (clean stacked layout) ===== */
+  .exp-slide{ padding:6vh 6vw; }
+  .exp-wrap{
+    width:100%; max-width:760px;
+    display:flex; flex-direction:column; align-items:center;
   }
-  .exp-img-stack{
-    position:absolute; inset:0;
+  .exp-header{ text-align:center; margin-bottom:1.1rem; }
+  .exp-header .eyebrow{ margin-bottom:.4rem; }
+  .exp-header h2{ font-size:2rem; margin-bottom:.2rem; }
+  .exp-header .role{ font-family:'DM Mono',monospace; color:var(--text-soft); font-size:.92rem; }
+
+  .exp-strip{
+    position:relative; width:100%; height:42vh; max-height:380px;
+    border-radius:10px; overflow:hidden; border:2px solid var(--line);
+    background:var(--surface-2);
+    margin-bottom:1.4rem;
   }
-  .exp-img-stack img{
+  .exp-strip img{
     position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
-    opacity:0; transition:opacity .9s ease;
+    opacity:0; transition:opacity .8s ease;
   }
-  .exp-img-stack img.show{ opacity:1; }
-  .exp-img-stack::after{
-    content:''; position:absolute; inset:0;
-    background:linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.55) 100%);
-  }
+  .exp-strip img.show{ opacity:1; }
   .exp-counter{
-    position:absolute; top:24px; right:24px; z-index:5;
-    font-family:'DM Mono',monospace; font-size:.8rem; color:#fff;
-    background:rgba(0,0,0,0.4); padding:.4rem .8rem; border-radius:4px;
+    position:absolute; bottom:14px; right:14px; z-index:5;
+    font-family:'DM Mono',monospace; font-size:.75rem; color:#fff;
+    background:rgba(26,26,26,0.55); padding:.35rem .7rem; border-radius:4px;
     letter-spacing:.05em;
   }
-  .exp-caption{
-    position:absolute; bottom:0; left:0; right:0; z-index:5;
-    padding:3rem 6vw 4rem; color:#fff;
+  .exp-dots{
+    position:absolute; bottom:14px; left:14px; z-index:5; display:flex; gap:5px;
   }
-  .exp-caption .eyebrow{ color:#e8d4ba; }
-  .exp-caption h2{ font-size:2.4rem; margin-bottom:.3rem; }
-  .exp-caption .role{ font-size:1.05rem; opacity:.9; font-family:'DM Mono',monospace; }
+  .exp-dots span{
+    width:5px; height:5px; border-radius:50%; background:rgba(255,255,255,0.45);
+    transition:all .3s ease;
+  }
+  .exp-dots span.on{ background:#fff; transform:scale(1.3); }
 
-  /* facts panel (appears after images cycle) */
-  .exp-facts{
-    position:absolute; inset:0; z-index:8;
-    background:linear-gradient(135deg, var(--bg) 0%, var(--surface-2) 100%);
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    padding:6vh 6vw; opacity:0; pointer-events:none; transition:opacity .6s ease;
-  }
-  .exp-facts.show{ opacity:1; pointer-events:auto; }
-  .exp-facts h2{ font-size:2.6rem; margin-bottom:.2rem; text-align:center; }
-  .exp-facts .role{ font-family:'DM Mono',monospace; color:var(--text-soft); margin-bottom:2rem; }
   .facts-grid{
-    display:grid; grid-template-columns:repeat(2,1fr); gap:1rem;
-    width:100%; max-width:640px; margin-bottom:1.6rem;
+    display:grid; grid-template-columns:repeat(2,1fr); gap:.8rem;
+    width:100%; margin-bottom:1.3rem;
   }
   .fact-card{
     background:var(--surface); border:2px solid var(--line); border-radius:6px;
-    padding:1.1rem 1.3rem;
+    padding:.9rem 1.1rem;
   }
-  .fact-card .fl{ font-family:'DM Mono',monospace; font-size:.7rem; color:var(--primary); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.3rem; }
-  .fact-card .fv{ font-size:1rem; font-weight:600; }
+  .fact-card .fl{ font-family:'DM Mono',monospace; font-size:.66rem; color:var(--primary); text-transform:uppercase; letter-spacing:.08em; margin-bottom:.25rem; }
+  .fact-card .fv{ font-size:.92rem; font-weight:600; line-height:1.3; }
 
   /* ===== EDUCATION ===== */
   .edu-card{
@@ -275,8 +270,8 @@
   @media (max-width:768px){
     .slide{ padding:5vh 6vw; }
     .slide h1.hero-name{ font-size:2.1rem; }
-    .exp-caption h2{ font-size:1.6rem; }
-    .exp-facts h2{ font-size:1.8rem; }
+    .exp-header h2{ font-size:1.5rem; }
+    .exp-strip{ height:32vh; }
     .facts-grid{ grid-template-columns:1fr; }
     .cert-grid{ grid-template-columns:repeat(2,1fr); }
     .lang-grid{ grid-template-columns:repeat(2,1fr); }
@@ -311,126 +306,111 @@
 
   <!-- 1 AGON -->
   <section class="slide exp-slide" data-slide="agon">
-    <div class="exp-frame">
-      <div class="exp-img-stack" data-images="AGON_1.jpeg,AGON_2.jpeg,AGON_4.jpeg,AGON_6.jpeg"></div>
-      <div class="exp-counter"><span class="cur">1</span> / <span class="tot">4</span></div>
-      <div class="exp-caption">
+    <div class="exp-wrap">
+      <div class="exp-header">
         <div class="eyebrow">2021 — 2024</div>
         <h2>AGON</h2>
         <div class="role">Founder &amp; Event Director</div>
       </div>
-      <div class="exp-facts">
-        <div class="eyebrow">2021 — 2024</div>
-        <h2>AGON</h2>
-        <div class="role">Founder &amp; Event Director</div>
-        <div class="facts-grid">
-          <div class="fact-card"><div class="fl">Participants</div><div class="fv">500+ Debaters</div></div>
-          <div class="fact-card"><div class="fl">Editions</div><div class="fv">3 Successful Events</div></div>
-          <div class="fact-card"><div class="fl">Status</div><div class="fv">Top Debate Competition in Morocco</div></div>
-          <div class="fact-card"><div class="fl">Impact</div><div class="fv">National Recognition</div></div>
-        </div>
-        <a href="https://www.instagram.com/the.great.debaters.encgt?igsh=aG9rMGhydm9jc2w0" class="cta ghost" target="_blank">View on Instagram →</a>
+      <div class="exp-strip" data-images="AGON_1.jpeg,AGON_2.jpeg,AGON_4.jpeg,AGON_6.jpeg">
+        <div class="exp-dots"></div>
+        <div class="exp-counter"><span class="cur">1</span> / <span class="tot">4</span></div>
       </div>
+      <div class="facts-grid">
+        <div class="fact-card"><div class="fl">Participants</div><div class="fv">500+ Debaters</div></div>
+        <div class="fact-card"><div class="fl">Editions</div><div class="fv">3 Successful Events</div></div>
+        <div class="fact-card"><div class="fl">Status</div><div class="fv">Top Debate Competition in Morocco</div></div>
+        <div class="fact-card"><div class="fl">Impact</div><div class="fv">National Recognition</div></div>
+      </div>
+      <a href="https://www.instagram.com/the.great.debaters.encgt?igsh=aG9rMGhydm9jc2w0" class="cta ghost" target="_blank">View on Instagram →</a>
     </div>
   </section>
 
   <!-- 2 SURF CUP -->
   <section class="slide exp-slide" data-slide="surf">
-    <div class="exp-frame">
-      <div class="exp-img-stack" data-images="Surf_Cup_2024_1.jpeg,Surf_Cup_2024_3.jpeg,Surf_Cup_2024_8.jpeg,Surf_Cup_2024_9.jpeg"></div>
-      <div class="exp-counter"><span class="cur">1</span> / <span class="tot">4</span></div>
-      <div class="exp-caption">
+    <div class="exp-wrap">
+      <div class="exp-header">
         <div class="eyebrow">November 2024</div>
         <h2>Surf Cup International Salou</h2>
         <div class="role">Field Coordinator</div>
       </div>
-      <div class="exp-facts">
-        <div class="eyebrow">November 2024</div>
-        <h2>Surf Cup International Salou</h2>
-        <div class="role">Field Coordinator</div>
-        <div class="facts-grid">
-          <div class="fact-card"><div class="fl">Teams</div><div class="fv">180+ from 26 countries</div></div>
-          <div class="fact-card"><div class="fl">Location</div><div class="fv">Salou, Spain</div></div>
-          <div class="fact-card"><div class="fl">Categories</div><div class="fv">Boys U10-19 | Girls U12-19</div></div>
-          <div class="fact-card"><div class="fl">Venue</div><div class="fv">Mediterranean Sport Village</div></div>
-        </div>
-        <a href="https://globalsportsexperiences.com/surf-cup-international-salou-2024-recap/" class="cta ghost" target="_blank">Read Recap →</a>
+      <div class="exp-strip" data-images="Surf_Cup_2024_1.jpeg,Surf_Cup_2024_3.jpeg,Surf_Cup_2024_8.jpeg,Surf_Cup_2024_9.jpeg">
+        <div class="exp-dots"></div>
+        <div class="exp-counter"><span class="cur">1</span> / <span class="tot">4</span></div>
       </div>
+      <div class="facts-grid">
+        <div class="fact-card"><div class="fl">Teams</div><div class="fv">180+ from 26 countries</div></div>
+        <div class="fact-card"><div class="fl">Location</div><div class="fv">Salou, Spain</div></div>
+        <div class="fact-card"><div class="fl">Categories</div><div class="fv">Boys U10-19 | Girls U12-19</div></div>
+        <div class="fact-card"><div class="fl">Venue</div><div class="fv">Mediterranean Sport Village</div></div>
+      </div>
+      <a href="https://globalsportsexperiences.com/surf-cup-international-salou-2024-recap/" class="cta ghost" target="_blank">Read Recap →</a>
     </div>
   </section>
 
   <!-- 3 BARÇA -->
   <section class="slide exp-slide" data-slide="barca">
-    <div class="exp-frame">
-      <div class="exp-img-stack" data-images="BA_2.jpeg,BA_3.jpeg,BA_9.jpeg,BA_12.jpeg,FCB_Tour_2025_1.jpeg,FCB_Tour_2025_3.jpeg"></div>
-      <div class="exp-counter"><span class="cur">1</span> / <span class="tot">6</span></div>
-      <div class="exp-caption">
+    <div class="exp-wrap">
+      <div class="exp-header">
         <div class="eyebrow">April — August 2025</div>
         <h2>Barça Academy — FC Barcelona</h2>
         <div class="role">Business Development Assistant</div>
       </div>
-      <div class="exp-facts">
-        <div class="eyebrow">April — August 2025</div>
-        <h2>Barça Academy</h2>
-        <div class="role">Business Development Assistant</div>
-        <div class="facts-grid">
-          <div class="fact-card"><div class="fl">Summer Camps</div><div class="fv">400+ coaches, 115 camps</div></div>
-          <div class="fact-card"><div class="fl">Reach</div><div class="fv">4500+ players, 4 continents</div></div>
-          <div class="fact-card"><div class="fl">First Team Tour</div><div class="fv">Japan &amp; South Korea</div></div>
-          <div class="fact-card"><div class="fl">Strategy</div><div class="fv">Morocco, Saudi Arabia, Francophone Africa</div></div>
-        </div>
-        <a href="https://barcaacademy.fcbarcelona.com/en/" class="cta ghost" target="_blank">Visit Academy →</a>
+      <div class="exp-strip" data-images="BA_2.jpeg,BA_3.jpeg,BA_9.jpeg,BA_12.jpeg,FCB_Tour_2025_1.jpeg,FCB_Tour_2025_3.jpeg">
+        <div class="exp-dots"></div>
+        <div class="exp-counter"><span class="cur">1</span> / <span class="tot">6</span></div>
       </div>
+      <div class="facts-grid">
+        <div class="fact-card"><div class="fl">Summer Camps</div><div class="fv">400+ coaches, 115 camps</div></div>
+        <div class="fact-card"><div class="fl">Reach</div><div class="fv">4500+ players, 4 continents</div></div>
+        <div class="fact-card"><div class="fl">First Team Tour</div><div class="fv">Japan &amp; South Korea</div></div>
+        <div class="fact-card"><div class="fl">Strategy</div><div class="fv">Morocco, Saudi Arabia, Francophone Africa</div></div>
+      </div>
+      <a href="https://barcaacademy.fcbarcelona.com/en/" class="cta ghost" target="_blank">Visit Academy →</a>
     </div>
   </section>
 
   <!-- 4 AFCON -->
   <section class="slide exp-slide" data-slide="afcon">
-    <div class="exp-frame">
-      <div class="exp-img-stack" data-images="AFCON_5.jpeg,AFCON_6.jpeg,AFCON_7.jpeg,AFCON_8.jpeg"></div>
-      <div class="exp-counter"><span class="cur">1</span> / <span class="tot">4</span></div>
-      <div class="exp-caption">
+    <div class="exp-wrap">
+      <div class="exp-header">
         <div class="eyebrow">December 2025 — January 2026</div>
         <h2>AFCON 2025</h2>
         <div class="role">Competitions Team Member</div>
       </div>
-      <div class="exp-facts">
-        <div class="eyebrow">December 2025 — January 2026</div>
-        <h2>AFCON 2025</h2>
-        <div class="role">Competitions Team Member</div>
-        <div class="facts-grid">
-          <div class="fact-card"><div class="fl">Tournament</div><div class="fv">Africa Cup of Nations — Morocco</div></div>
-          <div class="fact-card"><div class="fl">Coverage</div><div class="fv">Group Stages + Semis</div></div>
-          <div class="fact-card"><div class="fl">Venue</div><div class="fv">Grand Stadium Tangier</div></div>
-          <div class="fact-card"><div class="fl">Protocol</div><div class="fv">CAF Standards</div></div>
-        </div>
-        <a href="https://www.cafonline.com/afcon2025/" class="cta ghost" target="_blank">Official Site →</a>
+      <div class="exp-strip" data-images="AFCON_5.jpeg,AFCON_6.jpeg,AFCON_7.jpeg,AFCON_8.jpeg">
+        <div class="exp-dots"></div>
+        <div class="exp-counter"><span class="cur">1</span> / <span class="tot">4</span></div>
       </div>
+      <div class="facts-grid">
+        <div class="fact-card"><div class="fl">Tournament</div><div class="fv">Africa Cup of Nations — Morocco</div></div>
+        <div class="fact-card"><div class="fl">Coverage</div><div class="fv">Group Stages + Semis</div></div>
+        <div class="fact-card"><div class="fl">Venue</div><div class="fv">Grand Stadium Tangier</div></div>
+        <div class="fact-card"><div class="fl">Protocol</div><div class="fv">CAF Standards</div></div>
+      </div>
+      <a href="https://www.cafonline.com/afcon2025/" class="cta ghost" target="_blank">Official Site →</a>
     </div>
   </section>
 
   <!-- 5 TIC -->
   <section class="slide exp-slide" data-slide="tic">
-    <div class="exp-frame">
-      <div class="exp-img-stack" data-images="TIC_2026_1.jpeg,TIC_2026_2.jpeg,TIC_2026_3.jpeg,TIC_2026_4.jpeg,TIC_2026_5.jpeg,TIC_2026_6.jpeg"></div>
-      <div class="exp-counter"><span class="cur">1</span> / <span class="tot">6</span></div>
-      <div class="exp-caption">
-        <div class="eyebrow">April — May 2026</div>
-        <h2>Tangier International Cup</h2>
-        <div class="role">Project Manager</div>
-      </div>
-      <div class="exp-facts">
+    <div class="exp-wrap">
+      <div class="exp-header">
         <div class="eyebrow">April — May 2026 · 6th Edition</div>
         <h2>Tangier International Cup</h2>
         <div class="role">Project Manager</div>
-        <div class="facts-grid">
-          <div class="fact-card"><div class="fl">Players</div><div class="fv">350+ Athletes</div></div>
-          <div class="fact-card"><div class="fl">Nations</div><div class="fv">Morocco, Spain, Portugal, England, France, Belgium</div></div>
-          <div class="fact-card"><div class="fl">Categories</div><div class="fv">U13, U11, Women's</div></div>
-          <div class="fact-card"><div class="fl">Venue</div><div class="fv">Ibn Khaldoun Stadium</div></div>
-        </div>
-        <a href="https://tangierinternationalcup.com/" class="cta ghost" target="_blank">Visit Website →</a>
       </div>
+      <div class="exp-strip" data-images="TIC_2026_1.jpeg,TIC_2026_2.jpeg,TIC_2026_3.jpeg,TIC_2026_4.jpeg,TIC_2026_5.jpeg,TIC_2026_6.jpeg">
+        <div class="exp-dots"></div>
+        <div class="exp-counter"><span class="cur">1</span> / <span class="tot">6</span></div>
+      </div>
+      <div class="facts-grid">
+        <div class="fact-card"><div class="fl">Players</div><div class="fv">350+ Athletes</div></div>
+        <div class="fact-card"><div class="fl">Nations</div><div class="fv">Morocco, Spain, Portugal, England, France, Belgium</div></div>
+        <div class="fact-card"><div class="fl">Categories</div><div class="fv">U13, U11, Women's</div></div>
+        <div class="fact-card"><div class="fl">Venue</div><div class="fv">Ibn Khaldoun Stadium</div></div>
+      </div>
+      <a href="https://tangierinternationalcup.com/" class="cta ghost" target="_blank">Visit Website →</a>
     </div>
   </section>
 
@@ -682,38 +662,40 @@
 
   // ===== Experience slide image-cycle logic =====
   function initExpSlide(slide){
-    const stack = slide.querySelector('.exp-img-stack');
-    if(!stack) return;
-    const facts = slide.querySelector('.exp-facts');
-    const counter = slide.querySelector('.exp-counter');
-    const curEl = counter ? counter.querySelector('.cur') : null;
+    const strip = slide.querySelector('.exp-strip');
+    if(!strip) return;
+    const counter = strip.querySelector('.exp-counter .cur');
+    const dotsWrap = strip.querySelector('.exp-dots');
 
-    if(stack.dataset.inited){
-      // revisiting: reset to first image, hide facts
-      facts.classList.remove('show');
-      const imgs = stack.querySelectorAll('img');
-      imgs.forEach((im,ii)=> im.classList.toggle('show', ii===0));
-      if(curEl) curEl.textContent = 1;
+    if(strip.dataset.inited){
+      // revisiting: just reset visible image, keep cycle running (it never stopped)
       return;
     }
-    stack.dataset.inited = '1';
+    strip.dataset.inited = '1';
 
-    const files = stack.dataset.images.split(',');
+    const files = strip.dataset.images.split(',');
     let i = 0;
 
     const imgs = files.map((f)=>{
       const img = document.createElement('img');
       img.src = 'Images/' + f;
       img.alt = '';
-      stack.appendChild(img);
+      strip.appendChild(img);
       return img;
     });
+
+    files.forEach((f,fi)=>{
+      const d = document.createElement('span');
+      if(fi===0) d.classList.add('on');
+      dotsWrap.appendChild(d);
+    });
+    const dotEls = dotsWrap.querySelectorAll('span');
 
     function whenReady(img, cb){
       if(img.complete && img.naturalWidth > 0){ cb(); }
       else{
         img.addEventListener('load', cb, {once:true});
-        img.addEventListener('error', cb, {once:true}); // don't get stuck if one image fails
+        img.addEventListener('error', cb, {once:true});
       }
     }
 
@@ -723,18 +705,17 @@
     });
 
     function cycle(){
-      if(i >= files.length - 1){
-        setTimeout(()=>{ facts.classList.add('show'); }, 1600);
-        return;
-      }
-      const HOLD = 1800;
+      const HOLD = 2400;
       setTimeout(()=>{
-        const next = imgs[i+1];
+        const nextIndex = (i+1) % files.length;
+        const next = imgs[nextIndex];
         whenReady(next, ()=>{
           imgs[i].classList.remove('show');
-          i++;
+          dotEls[i].classList.remove('on');
+          i = nextIndex;
           next.classList.add('show');
-          if(curEl) curEl.textContent = i+1;
+          dotEls[i].classList.add('on');
+          if(counter) counter.textContent = i+1;
           cycle();
         });
       }, HOLD);
