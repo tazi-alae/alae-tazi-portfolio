@@ -153,10 +153,15 @@
   }
   .exp-dots span.on{ background:#fff; transform:scale(1.3); }
 
+  .facts-heading{
+    font-family:'DM Mono',monospace; font-size:.72rem; color:var(--text-soft);
+    text-transform:uppercase; letter-spacing:.1em; margin-bottom:.7rem; width:100%;
+  }
   .facts-grid{
     display:grid; grid-template-columns:repeat(2,1fr); gap:.8rem;
     width:100%; margin-bottom:1.3rem;
   }
+  .facts-grid.stack-3{ grid-template-columns:1fr; max-width:560px; margin-left:auto; margin-right:auto; }
   .fact-card{
     background:var(--surface); border:2px solid var(--line); border-radius:6px;
     padding:.9rem 1.1rem;
@@ -166,11 +171,12 @@
 
   /* ===== EDUCATION ===== */
   .edu-card{
-    display:flex; flex-direction:column; align-items:center; text-align:center; max-width:420px;
+    display:flex; flex-direction:column; align-items:center; text-align:center; max-width:520px;
   }
+  .edu-photos{ display:flex; gap:1rem; margin-bottom:1.6rem; }
   .edu-photo{
-    width:200px; height:200px; border-radius:8px; overflow:hidden;
-    border:3px solid var(--primary); margin-bottom:1.6rem;
+    width:160px; height:160px; border-radius:8px; overflow:hidden;
+    border:3px solid var(--primary);
   }
   .edu-photo img{ width:100%; height:100%; object-fit:cover; }
   .edu-list{ width:100%; display:flex; flex-direction:column; gap:1.2rem; margin-top:1rem; }
@@ -290,6 +296,8 @@
     #nav{ right:16px; bottom:16px; }
     .nav-btn{ width:44px; height:44px; }
     .skills-overview-grid{ grid-template-columns:1fr; }
+    .edu-photos{ gap:.7rem; }
+    .edu-photo{ width:120px; height:120px; }
   }
 </style>
 </head>
@@ -326,17 +334,18 @@
       <div class="exp-header">
         <div class="eyebrow">2021 — 2024</div>
         <h2>AGON</h2>
-        <div class="role">Founder &amp; Event Director</div>
+        <div class="role">Founder &amp; Event Director, later Advisor</div>
       </div>
       <div class="exp-strip" data-images="AGON_1.jpeg,AGON_2.jpeg,AGON_4.jpeg,AGON_6.jpeg">
         <div class="exp-dots"></div>
         <div class="exp-counter"><span class="cur">1</span> / <span class="tot">4</span></div>
       </div>
+      <div class="facts-heading">Overview</div>
       <div class="facts-grid">
-        <div class="fact-card"><div class="fl">Participants</div><div class="fv">500+ Debaters</div></div>
-        <div class="fact-card"><div class="fl">Editions</div><div class="fv">3 Successful Events</div></div>
-        <div class="fact-card"><div class="fl">Status</div><div class="fv">Top Debate Competition in Morocco</div></div>
-        <div class="fact-card"><div class="fl">Impact</div><div class="fv">National Recognition</div></div>
+        <div class="fact-card"><div class="fl">Edition 1</div><div class="fv">2021</div></div>
+        <div class="fact-card"><div class="fl">Edition 2</div><div class="fv">2022</div></div>
+        <div class="fact-card"><div class="fl">Edition 3</div><div class="fv">2023</div></div>
+        <div class="fact-card"><div class="fl">Edition 4</div><div class="fv">2024 — Advisor</div></div>
       </div>
       <a href="https://www.instagram.com/the.great.debaters.encgt?igsh=aG9rMGhydm9jc2w0" class="cta ghost" target="_blank">View on Instagram →</a>
     </div>
@@ -354,6 +363,7 @@
         <div class="exp-dots"></div>
         <div class="exp-counter"><span class="cur">1</span> / <span class="tot">4</span></div>
       </div>
+      <div class="facts-heading">Overview</div>
       <div class="facts-grid">
         <div class="fact-card"><div class="fl">Teams</div><div class="fv">180+ from 26 countries</div></div>
         <div class="fact-card"><div class="fl">Location</div><div class="fv">Salou, Spain</div></div>
@@ -370,17 +380,17 @@
       <div class="exp-header">
         <div class="eyebrow">April — August 2025</div>
         <h2>Barça Academy — FC Barcelona</h2>
-        <div class="role">Business Development Assistant</div>
+        <div class="role">Contributor across 3 global projects</div>
       </div>
       <div class="exp-strip" data-images="BA_2.jpeg,BA_3.jpeg,BA_9.jpeg,BA_12.jpeg,FCB_Tour_2025_1.jpeg,FCB_Tour_2025_3.jpeg">
         <div class="exp-dots"></div>
         <div class="exp-counter"><span class="cur">1</span> / <span class="tot">6</span></div>
       </div>
-      <div class="facts-grid">
-        <div class="fact-card"><div class="fl">Summer Camps</div><div class="fv">400+ coaches, 115 camps</div></div>
-        <div class="fact-card"><div class="fl">Reach</div><div class="fv">4500+ players, 4 continents</div></div>
-        <div class="fact-card"><div class="fl">First Team Tour</div><div class="fv">Japan &amp; South Korea</div></div>
-        <div class="fact-card"><div class="fl">Strategy</div><div class="fv">Morocco, Saudi Arabia, Francophone Africa</div></div>
+      <div class="facts-heading">Overview</div>
+      <div class="facts-grid stack-3">
+        <div class="fact-card"><div class="fl">BA Summer Camps 2025</div><div class="fv">400+ coaches, 115 camps, 4500+ players, 4 continents</div></div>
+        <div class="fact-card"><div class="fl">FCB Summer Tour 2025</div><div class="fv">Japan &amp; South Korea, first team logistics</div></div>
+        <div class="fact-card"><div class="fl">Market Studies</div><div class="fv">Morocco, Saudi Arabia, Francophone Africa</div></div>
       </div>
       <a href="https://barcaacademy.fcbarcelona.com/en/" class="cta ghost" target="_blank">Visit Academy →</a>
     </div>
@@ -398,6 +408,7 @@
         <div class="exp-dots"></div>
         <div class="exp-counter"><span class="cur">1</span> / <span class="tot">4</span></div>
       </div>
+      <div class="facts-heading">Overview</div>
       <div class="facts-grid">
         <div class="fact-card"><div class="fl">Tournament</div><div class="fv">Africa Cup of Nations — Morocco</div></div>
         <div class="fact-card"><div class="fl">Coverage</div><div class="fv">Group Stages + Semis</div></div>
@@ -420,6 +431,7 @@
         <div class="exp-dots"></div>
         <div class="exp-counter"><span class="cur">1</span> / <span class="tot">6</span></div>
       </div>
+      <div class="facts-heading">Overview</div>
       <div class="facts-grid">
         <div class="fact-card"><div class="fl">Players</div><div class="fv">350+ Athletes</div></div>
         <div class="fact-card"><div class="fl">Nations</div><div class="fv">Morocco, Spain, Portugal, England, France, Belgium</div></div>
@@ -434,7 +446,10 @@
   <section class="slide" data-slide="education">
     <div class="eyebrow">Education</div>
     <div class="edu-card">
-      <div class="edu-photo"><img src="Images/Graduation.jpeg" alt="Graduation"></div>
+      <div class="edu-photos">
+        <div class="edu-photo"><img src="Images/Graduation_1.jpeg" alt="Graduation"></div>
+        <div class="edu-photo"><img src="Images/Graduation_2.jpeg" alt="Graduation"></div>
+      </div>
       <div class="edu-list">
         <div class="edu-item">
           <div class="edu-logo">ESB</div>
@@ -456,17 +471,45 @@
     </div>
   </section>
 
-  <!-- 7 CERTIFICATIONS -->
-  <section class="slide" data-slide="certs">
-    <div class="eyebrow">Certifications</div>
-    <h2 style="margin-bottom:2rem;">Always Leveling Up</h2>
-    <div class="cert-grid">
-      <div class="cert-card"><div class="cert-logo">H</div><div class="cert-title">Hudl Certified Analyst</div><div class="cert-issuer">Hudl</div><div class="cert-year">In Progress</div></div>
-      <div class="cert-card"><div class="cert-logo">PBI</div><div class="cert-title">Power BI Certified</div><div class="cert-issuer">Microsoft</div><div class="cert-year">In Progress</div></div>
-      <div class="cert-card"><div class="cert-logo">FIFA</div><div class="cert-title">Tournament Management</div><div class="cert-issuer">FIFA Forward</div><div class="cert-year">Planned</div></div>
-      <div class="cert-card"><div class="cert-logo">UEFA</div><div class="cert-title">Football Operations Diploma</div><div class="cert-issuer">UEFA</div><div class="cert-year">Planned</div></div>
-      <div class="cert-card"><div class="cert-logo">HS</div><div class="cert-title">CRM Certification</div><div class="cert-issuer">HubSpot</div><div class="cert-year">Planned</div></div>
-      <div class="cert-card"><div class="cert-logo">NS</div><div class="cert-title">Video Analysis</div><div class="cert-issuer">Nacsport</div><div class="cert-year">Planned</div></div>
+  <!-- 7 SOFTWARE & TOOLS -->
+  <section class="slide" data-slide="software">
+    <div class="skills-overview">
+      <div class="eyebrow" style="text-align:center;">Software &amp; Tools</div>
+      <h2 style="margin-bottom:1.6rem; text-align:center;">What I Work With</h2>
+      <div class="skills-overview-grid">
+        <div class="skill-block">
+          <h3><span class="num">01</span> Project &amp; Logistics Management</h3>
+          <ul>
+            <li>Notion</li>
+            <li>SAP</li>
+            <li>Excel &amp; Google Sheets</li>
+          </ul>
+        </div>
+        <div class="skill-block">
+          <h3><span class="num">02</span> Database &amp; Reporting</h3>
+          <ul>
+            <li>Power BI</li>
+            <li>HubSpot CRM</li>
+            <li>Excel (Advanced)</li>
+          </ul>
+        </div>
+        <div class="skill-block">
+          <h3><span class="num">03</span> Video Analysis</h3>
+          <ul>
+            <li>Hudl</li>
+            <li>Nacsport</li>
+            <li>Metrica Nexus</li>
+          </ul>
+        </div>
+        <div class="skill-block">
+          <h3><span class="num">04</span> Social Media &amp; Video Editing</h3>
+          <ul>
+            <li>Adobe Premiere Pro</li>
+            <li>Final Cut Pro</li>
+            <li>Canva Pro</li>
+          </ul>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -477,35 +520,31 @@
       <h2 style="margin-bottom:1.6rem; text-align:center;">What I Bring to the Pitch</h2>
       <div class="skills-overview-grid">
         <div class="skill-block">
-          <h3><span class="num">01</span> Tournament Operations</h3>
+          <h3><span class="num">01</span> Planning &amp; Scheduling</h3>
           <ul>
-            <li>End-to-end event management</li>
-            <li>Fixture scheduling</li>
-            <li>Matchday protocol compliance</li>
+            <li>Conflict-free fixture scheduling across venues (TIC)</li>
+            <li>Built a competition from scratch across 4 editions (AGON)</li>
           </ul>
         </div>
         <div class="skill-block">
-          <h3><span class="num">02</span> Logistics &amp; Coordination</h3>
+          <h3><span class="num">02</span> On-Site Execution</h3>
           <ul>
-            <li>Transport planning</li>
-            <li>Hotel operations</li>
-            <li>Inter-venue coordination</li>
+            <li>Live field coordination across 180+ teams (Surf Cup)</li>
+            <li>Matchday operations under CAF protocol (AFCON)</li>
           </ul>
         </div>
         <div class="skill-block">
-          <h3><span class="num">03</span> Data &amp; Administration</h3>
+          <h3><span class="num">03</span> Stakeholder Coordination</h3>
           <ul>
-            <li>Power BI &amp; Excel (advanced)</li>
-            <li>Database management</li>
-            <li>Performance reporting</li>
+            <li>Liaised with CAF &amp; FRMF on tournament-day operations</li>
+            <li>Coordinated 6 nations and elite clubs at once (TIC)</li>
           </ul>
         </div>
         <div class="skill-block">
-          <h3><span class="num">04</span> Stakeholder Management</h3>
+          <h3><span class="num">04</span> Data &amp; Strategy</h3>
           <ul>
-            <li>Federation &amp; club liaison</li>
-            <li>Multicultural team coordination</li>
-            <li>CRM systems (HubSpot, SAP)</li>
+            <li>Managed a 400+ coach database (Barça Academy)</li>
+            <li>Led market-entry research across 3 regions</li>
           </ul>
         </div>
       </div>
