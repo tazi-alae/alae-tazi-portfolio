@@ -655,10 +655,13 @@
   let wheelCooldown = false;
   window.addEventListener('wheel', (e)=>{
     if(document.body.classList.contains('unlocked')) return;
-    if(wheelCooldown) return;
-    if(e.deltaY > 30){ wheelCooldown = true; goTo(idx+1); setTimeout(()=>wheelCooldown=false, 700); }
-    else if(e.deltaY < -30){ wheelCooldown = true; goTo(idx-1); setTimeout(()=>wheelCooldown=false, 700); }
-  }, {passive:true});
+    e.preventDefault();
+    if(wheelCooldown || animating) return;
+    wheelCooldown = true;
+    if(e.deltaY > 30){ goTo(idx+1); }
+    else if(e.deltaY < -30){ goTo(idx-1); }
+    setTimeout(()=>{ wheelCooldown = false; }, 900);
+  }, {passive:false});
 
   // touch navigation (locked mode only)
   let touchStartY = 0;
@@ -681,38 +684,61 @@
   function initExpSlide(slide){
     const stack = slide.querySelector('.exp-img-stack');
     if(!stack) return;
-    if(stack.dataset.inited) { return; }
+    const facts = slide.querySelector('.exp-facts');
+    const counter = slide.querySelector('.exp-counter');
+    const curEl = counter ? counter.querySelector('.cur') : null;
+
+    if(stack.dataset.inited){
+      // revisiting: reset to first image, hide facts
+      facts.classList.remove('show');
+      const imgs = stack.querySelectorAll('img');
+      imgs.forEach((im,ii)=> im.classList.toggle('show', ii===0));
+      if(curEl) curEl.textContent = 1;
+      return;
+    }
     stack.dataset.inited = '1';
 
     const files = stack.dataset.images.split(',');
-    const counter = slide.querySelector('.exp-counter');
-    const curEl = counter ? counter.querySelector('.cur') : null;
-    const facts = slide.querySelector('.exp-facts');
     let i = 0;
 
-    files.forEach((f)=>{
+    const imgs = files.map((f)=>{
       const img = document.createElement('img');
       img.src = 'Images/' + f;
       img.alt = '';
       stack.appendChild(img);
+      return img;
     });
-    const imgs = stack.querySelectorAll('img');
-    imgs[0].classList.add('show');
+
+    function whenReady(img, cb){
+      if(img.complete && img.naturalWidth > 0){ cb(); }
+      else{
+        img.addEventListener('load', cb, {once:true});
+        img.addEventListener('error', cb, {once:true}); // don't get stuck if one image fails
+      }
+    }
+
+    whenReady(imgs[0], ()=>{
+      imgs[0].classList.add('show');
+      cycle();
+    });
 
     function cycle(){
       if(i >= files.length - 1){
-        setTimeout(()=>{ facts.classList.add('show'); }, 1400);
+        setTimeout(()=>{ facts.classList.add('show'); }, 1600);
         return;
       }
+      const HOLD = 1800;
       setTimeout(()=>{
-        imgs[i].classList.remove('show');
-        i++;
-        imgs[i].classList.add('show');
-        if(curEl) curEl.textContent = i+1;
-        cycle();
-      }, 1600);
+        const next = imgs[i+1];
+        whenReady(next, ()=>{
+          imgs[i].classList.remove('show');
+          i++;
+          next.classList.add('show');
+          if(curEl) curEl.textContent = i+1;
+          cycle();
+        });
+      }, HOLD);
     }
-    cycle();
   }
 
   // init
