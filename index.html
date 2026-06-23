@@ -32,8 +32,8 @@
   .mono{ font-family:'DM Mono',monospace; }
 
   /* ===== SLIDE STRUCTURE ===== */
-  #deck{ position:relative; width:100%; height:100vh; }
-  body.unlocked #deck{ height:auto; }
+  #deck{ position:relative; width:100%; height:100vh; overflow:hidden; }
+  body.unlocked #deck{ height:auto; overflow:visible; }
 
   .slide{
     position:absolute; inset:0;
@@ -41,24 +41,26 @@
     display:flex; flex-direction:column; align-items:center; justify-content:center;
     padding:6vh 6vw;
     opacity:0; pointer-events:none;
-    transition:opacity .5s ease;
+    transform:translateX(60px);
+    transition:opacity .45s ease, transform .45s ease;
   }
-  .slide.active{ opacity:1; pointer-events:auto; }
+  .slide.active{ opacity:1; pointer-events:auto; transform:translateX(0); }
+  .slide.exit-left{ opacity:0; transform:translateX(-60px); transition:opacity .45s ease, transform .45s ease; }
   body.unlocked .slide{
-    position:relative; opacity:1; pointer-events:auto;
+    position:relative; opacity:1; pointer-events:auto; transform:none;
     min-height:100vh; height:auto; padding:10vh 6vw;
     border-bottom:1px solid var(--line);
   }
 
-  /* ===== PROGRESS TRAIL (pitch-line) ===== */
+  /* ===== PROGRESS TRAIL (pitch-line, horizontal, bottom center) ===== */
   #trail{
-    position:fixed; right:22px; top:50%; transform:translateY(-50%);
-    display:flex; flex-direction:column; align-items:center; gap:10px;
+    position:fixed; bottom:32px; left:50%; transform:translateX(-50%);
+    display:flex; flex-direction:row; align-items:center; gap:8px;
     z-index:50;
   }
   body.unlocked #trail{ display:none; }
   #trail .seg{
-    width:2px; height:14px; background:var(--line-strong);
+    width:14px; height:2px; background:var(--line-strong);
   }
   #trail .dot{
     width:8px; height:8px; border-radius:50%;
@@ -86,7 +88,7 @@
   .nav-btn:disabled{ opacity:0.25; cursor:default; pointer-events:none; }
 
   .skip-hint{
-    position:fixed; left:28px; bottom:28px; z-index:50;
+    position:fixed; left:28px; bottom:34px; z-index:50;
     font-family:'DM Mono',monospace; font-size:.7rem; color:var(--text-soft);
     letter-spacing:.05em; text-transform:uppercase; opacity:.6;
   }
@@ -305,7 +307,7 @@
 
 <div id="trail"></div>
 
-<div class="skip-hint">scroll or use arrows ↓</div>
+<div class="skip-hint">swipe or use arrows →</div>
 <div id="nav">
   <button class="nav-btn" id="prevBtn" aria-label="Previous">←</button>
   <button class="nav-btn" id="nextBtn" aria-label="Next">→</button>
@@ -620,63 +622,89 @@
     prevBtn.disabled = idx === 0;
   }
 
-  function goTo(newIdx){
+  function goTo(newIdx, direction){
     if(newIdx < 0 || newIdx >= total || animating) return;
     animating = true;
-    slides[idx].classList.remove('active');
+
+    const outgoing = slides[idx];
+    const incoming = slides[newIdx];
+
+    // position incoming offscreen in the right direction
+    incoming.style.transform = direction === 'prev' ? 'translateX(-60px)' : 'translateX(60px)';
+    incoming.style.opacity = '0';
+    incoming.style.transition = 'none';
+
+    // force reflow
+    incoming.offsetHeight;
+
+    // slide outgoing away
+    outgoing.style.transform = direction === 'prev' ? 'translateX(60px)' : 'translateX(-60px)';
+    outgoing.style.opacity = '0';
+    outgoing.style.transition = 'opacity .45s ease, transform .45s ease';
+    outgoing.classList.remove('active');
+
+    // slide incoming in
+    requestAnimationFrame(()=>{
+      incoming.style.transform = 'translateX(0)';
+      incoming.style.opacity = '1';
+      incoming.style.transition = 'opacity .45s ease, transform .45s ease';
+      incoming.classList.add('active');
+    });
+
     idx = newIdx;
-    slides[idx].classList.add('active');
     updateTrail();
     updateNav();
     initExpSlide(slides[idx]);
 
-    // if reached last slide, unlock scrolling
     if(idx === total - 1){
       setTimeout(()=>{
         document.body.classList.add('unlocked');
-        slides.forEach(s=>s.classList.add('active'));
-        // keep viewport on the contact slide instead of jumping to top
+        slides.forEach(s=>{
+          s.classList.add('active');
+          s.style.transform = '';
+          s.style.opacity = '';
+          s.style.transition = '';
+        });
         requestAnimationFrame(()=>{
           slides[total-1].scrollIntoView({behavior:'instant', block:'start'});
         });
       }, 700);
     }
-    setTimeout(()=>{ animating = false; }, 550);
+    setTimeout(()=>{ animating = false; }, 500);
   }
 
-  prevBtn.addEventListener('click', ()=> goTo(idx-1));
-  nextBtn.addEventListener('click', ()=> goTo(idx+1));
+  prevBtn.addEventListener('click', ()=> goTo(idx-1, 'prev'));
+  nextBtn.addEventListener('click', ()=> goTo(idx+1, 'next'));
   document.querySelectorAll('[data-next]').forEach(btn=>{
-    btn.addEventListener('click', (e)=>{ e.preventDefault(); goTo(idx+1); });
+    btn.addEventListener('click', (e)=>{ e.preventDefault(); goTo(idx+1, 'next'); });
   });
 
-  // wheel navigation (locked mode only)
+  // wheel — use deltaX for trackpads, deltaY as fallback for mice
   let wheelCooldown = false;
   window.addEventListener('wheel', (e)=>{
     if(document.body.classList.contains('unlocked')) return;
     e.preventDefault();
     if(wheelCooldown || animating) return;
-    wheelCooldown = true;
-    if(e.deltaY > 30){ goTo(idx+1); }
-    else if(e.deltaY < -30){ goTo(idx-1); }
-    setTimeout(()=>{ wheelCooldown = false; }, 900);
+    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    if(delta > 30){ wheelCooldown = true; goTo(idx+1, 'next'); setTimeout(()=>{ wheelCooldown = false; }, 900); }
+    else if(delta < -30){ wheelCooldown = true; goTo(idx-1, 'prev'); setTimeout(()=>{ wheelCooldown = false; }, 900); }
   }, {passive:false});
 
-  // touch navigation (locked mode only)
-  let touchStartY = 0;
-  window.addEventListener('touchstart', (e)=>{ touchStartY = e.touches[0].clientY; }, {passive:true});
+  // touch — horizontal swipe
+  let touchStartX = 0;
+  window.addEventListener('touchstart', (e)=>{ touchStartX = e.touches[0].clientX; }, {passive:true});
   window.addEventListener('touchend', (e)=>{
     if(document.body.classList.contains('unlocked')) return;
-    const dy = touchStartY - e.changedTouches[0].clientY;
-    if(Math.abs(dy) < 40) return;
-    if(dy > 0) goTo(idx+1); else goTo(idx-1);
+    const dx = touchStartX - e.changedTouches[0].clientX;
+    if(Math.abs(dx) < 40) return;
+    if(dx > 0) goTo(idx+1, 'next'); else goTo(idx-1, 'prev');
   }, {passive:true});
 
-  // keyboard
+  // keyboard — left/right arrows only
   window.addEventListener('keydown', (e)=>{
     if(document.body.classList.contains('unlocked')) return;
-    if(e.key === 'ArrowDown' || e.key === 'ArrowRight'){ goTo(idx+1); }
-    if(e.key === 'ArrowUp' || e.key === 'ArrowLeft'){ goTo(idx-1); }
+    if(e.key === 'ArrowRight'){ goTo(idx+1, 'next'); }
+    if(e.key === 'ArrowLeft'){ goTo(idx-1, 'prev'); }
   });
 
   // ===== Experience slide image-cycle logic =====
